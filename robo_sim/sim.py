@@ -39,7 +39,6 @@ class Sim:
     def update(self) -> bool:
         if self.reached:
             return False
-
         if self.step >= self.steps:
             logging.info("Maximum number of steps reached.")
             return False
@@ -48,7 +47,6 @@ class Sim:
         self.robot.move(direction, self.grid)
 
         logging.info(f"Robot moved to {self.robot.pos}.")
-
         self.step += 1
 
         if self.robot.pos == self.target:

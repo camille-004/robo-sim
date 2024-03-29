@@ -3,7 +3,7 @@ from robo_sim.sim import Sim
 
 
 def main():
-    config_path = CONFIGS_DIR / "basic_robot.yaml"
+    config_path = CONFIGS_DIR / "sensor_robot.yaml"
     sim = Sim(config_path)
     sim.run()
 

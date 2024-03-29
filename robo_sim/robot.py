@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 
 from .grid import Grid
@@ -14,6 +14,12 @@ class Direction(Enum):
 @dataclass
 class Robot:
     pos: tuple[int, int]
+    sensor_range: int = field(default=None, repr=False)
+    has_sensor_data: bool = field(default=False, init=False)
+
+    def __post_init__(self):
+        if self.sensor_range is not None:
+            self.has_sensor_data = True
 
     def move(self, direction: Direction, grid: Grid) -> None:
         dx, dy = direction.value
