@@ -34,7 +34,7 @@ class Sim:
     def update(self) -> bool:
         if self.reached:
             return False
-        
+
         if self.step >= self.steps:
             logging.info("Maximum number of steps reached.")
             return False

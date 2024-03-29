@@ -9,6 +9,7 @@ from .grid import CellType, Grid
 if TYPE_CHECKING:
     from .sim import Sim
 
+
 class Renderer:
     def __init__(
         self, grid: Grid, grid_size: tuple[int, int] = (10, 10)
@@ -16,7 +17,7 @@ class Renderer:
         self.grid = grid
         self.grid_size = grid_size
         self.fig, self.ax = plt.subplots()
-        
+
         self.ax.set_xlim(0, self.grid_size[1])
         self.ax.set_ylim(0, self.grid_size[0])
         self.ax.set_aspect("equal")
@@ -36,9 +37,7 @@ class Renderer:
                         color = "red"
 
                 self.ax.add_patch(
-                    patches.Rectangle(
-                        (x, y), 1, 1, facecolor=color
-                    )
+                    patches.Rectangle((x, y), 1, 1, facecolor=color)
                 )
 
         plt.xlabel("X")
@@ -53,9 +52,21 @@ class Renderer:
             self.final_frame = True
 
     def animate(self, sim: "Sim", steps: int) -> None:
-        self.anim = FuncAnimation(self.fig, self.update, fargs=(sim,), frames=steps, repeat=False)
+        self.anim = FuncAnimation(
+            self.fig, self.update, fargs=(sim,), frames=steps, repeat=False
+        )
         plt.show()
 
     def draw_final(self, sim: "Sim") -> None:
-        completion_text = "Simulation Complete" if sim.reached else "Simulation Ended"
-        self.ax.text(0.5, 0.5, completion_text, transform=self.ax.transAxes, ha="center", fontsize=14, color="green")
+        completion_text = (
+            "Simulation Complete" if sim.reached else "Simulation Ended"
+        )
+        self.ax.text(
+            0.5,
+            0.5,
+            completion_text,
+            transform=self.ax.transAxes,
+            ha="center",
+            fontsize=14,
+            color="green",
+        )

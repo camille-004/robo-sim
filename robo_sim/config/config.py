@@ -2,7 +2,9 @@ from pydantic import BaseModel, Field
 
 
 class SimConfig(BaseModel):
-    steps: int = Field(default=20, description="Number of steps for the robot to take.")
+    steps: int = Field(
+        default=20, description="Number of steps for the robot to take."
+    )
     grid_size: tuple[int, int] = Field(
         default=(10, 10), description="Size of the 2D grid as (width, height)."
     )
