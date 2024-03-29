@@ -43,7 +43,7 @@ class Renderer:
                     sim.robot.pos[0] + dx * distance,
                     sim.robot.pos[1] + dy * distance,
                 )
-                sensor_line, = self.ax.plot(
+                (sensor_line,) = self.ax.plot(
                     [sim.robot.pos[0], end_pos[0]],
                     [sim.robot.pos[1], end_pos[1]],
                     "r--",
@@ -64,7 +64,11 @@ class Renderer:
 
                 self.ax.add_patch(
                     patches.Rectangle(
-                        (x - 0.5, y - 0.5), 1, 1, facecolor=color, edgecolor="none"
+                        (x - 0.5, y - 0.5),
+                        1,
+                        1,
+                        facecolor=color,
+                        edgecolor="none",
                     )
                 )
 
