@@ -1,10 +1,12 @@
 import logging
 import random
+from pathlib import Path
 
-from .config import SimConfig
+from .config import ConfigFactory
+from .factory import BasicRobotFactory, registry
 from .grid import Grid
 from .renderer import Renderer
-from .robot import Direction, Robot
+from .robot import Direction
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s: %(message)s"
@@ -17,19 +19,22 @@ def get_next_direction() -> Direction:
 
 
 class Sim:
-    def __init__(self, config: SimConfig) -> None:
-        self.config = config
-        self.grid = Grid(size=config.grid_size)
-        self.robot = Robot(pos=config.start_pos)
-        self.target = config.target_pos
-        self.steps = config.steps
+    def __init__(self, config_path: Path) -> None:
+        self.config = ConfigFactory(config_path).load()
+        robot_factory = registry.get(type(self.config), BasicRobotFactory())
+        self.robot = robot_factory.create_robot(self.config)
+
+        self.grid = Grid(size=self.config.grid_size)
+        self.target = self.config.target_pos
+        self.steps = self.config.steps
+
         self.step = 0
         self.reached = False
 
         self.grid.add_target(self.target)
-        for obstacle in config.obstacles:
+        for obstacle in self.config.obstacles:
             self.grid.add_obstacle(obstacle)
-        self.renderer = Renderer(self.grid, grid_size=config.grid_size)
+        self.renderer = Renderer(self.grid, grid_size=self.config.grid_size)
 
     def update(self) -> bool:
         if self.reached:

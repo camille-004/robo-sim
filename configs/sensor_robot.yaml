@@ -1,0 +1,9 @@
+steps: 20
+grid_size: [10, 10]
+start_pos: [1, 1]
+target_pos: [8, 8]
+obstacles:
+  - [3, 3]
+  - [4, 4]
+  - [5, 5]
+sensor_range: 3

@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 
 
-class SimConfig(BaseModel):
+class Config(BaseModel):
     steps: int = Field(
         default=20, description="Number of steps for the robot to take."
     )
@@ -20,3 +20,9 @@ class SimConfig(BaseModel):
 
     class Config:
         populate_by_name = True
+
+
+class SensorRobotConfig(Config):
+    sensor_range: int = Field(
+        default=3, description="Range of the robot's sensors."
+    )

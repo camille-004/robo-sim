@@ -1,3 +1,5 @@
+import sys
+import time
 from typing import TYPE_CHECKING
 
 import matplotlib.patches as patches
@@ -70,3 +72,9 @@ class Renderer:
             fontsize=14,
             color="green",
         )
+
+        plt.draw()
+        plt.pause(0.1)
+
+        time.sleep(5)
+        sys.exit()
