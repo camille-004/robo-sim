@@ -28,7 +28,7 @@ robo_sim example sensor_robot AStar
 ## Running Custom Simulations
 
 1. To create a YAML configuration file for your simulation, refer to the `Config` model descriptions in the documentation for the required structure.
-2. Run your simulation with the below script. To see the the rest of supported algorithms, refer tos (https://github.com/camille-004/robo-sim/blob/main/robo_sim/algorithms/enums.py)[`robo_sim/algorithms/enums.py`].
+2. Run your simulation with the below script. To see the the rest of supported algorithms, refer to [`robo_sim/algorithms/enums.py`](https://github.com/camille-004/robo-sim/blob/main/robo_sim/algorithms/enums.py).
 
 ```python
 from pathlib import Path
