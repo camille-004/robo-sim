@@ -26,12 +26,7 @@ def main() -> None:
 
     if args.example == "example" and args.simulation and args.algorithm:
         config_path = CONFIGS_DIR / f"{args.simulation}.yaml"
-        algorithm_type = getattr(AlgorithmType, args.algorithm, None)
-
-        if algorithm_type is None:
-            raise ValueError(f"Unsupported algorithm: {args.algorithm}.")
-
-        sim = Sim(config_path, algorithm_type)
+        sim = Sim(config_path, args.algorithm)
         sim.run()
     else:
         parser.print_help()

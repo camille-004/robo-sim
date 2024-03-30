@@ -15,7 +15,7 @@ logger = get_logger(__name__)
 
 class Sim:
     def __init__(
-        self, config_path: Path, algorithm_type: AlgorithmType
+        self, config_path: Path, algorithm: str
     ) -> None:
         self.config = ConfigFactory(config_path).load()
         robot_factory = registry.get(type(self.config), BasicRobotFactory())
@@ -32,6 +32,7 @@ class Sim:
 
         self.grid.add_target(self.target)
 
+        algorithm_type = getattr(AlgorithmType, algorithm, None)
         self.algorithm = AlgorithmFactory.get_algorithm(
             algorithm_type,
             self.grid,
