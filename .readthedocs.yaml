@@ -18,6 +18,6 @@ sphinx:
 python:
   version: 3.10
   install:
-      - requirements: requirements.txt
-      - method: pip
-        path: .
+    - requirements: requirements.txt
+    - method: pip
+      path: .
