@@ -31,24 +31,26 @@ class Renderer:
         self.final_frame = False
 
     def draw_sensors(self, sim: "Sim") -> None:
+        if not sim.robot.has_sensor_data or not self.visualize_sensors:
+            return
+
         for visual in self.sensor_visuals:
             visual.remove()
         self.sensor_visuals.clear()
 
-        if sim.robot.has_sensor_data:
-            sensor_readings = sim.robot.sense_obstacles(sim.grid)
-            for direction, distance in sensor_readings.items():
-                dx, dy = Direction[direction].value
-                end_pos = (
-                    sim.robot.pos[0] + dx * distance,
-                    sim.robot.pos[1] + dy * distance,
-                )
-                (sensor_line,) = self.ax.plot(
-                    [sim.robot.pos[0], end_pos[0]],
-                    [sim.robot.pos[1], end_pos[1]],
-                    "r--",
-                )
-                self.sensor_visuals.append(sensor_line)
+        sensor_readings = sim.robot.sense_obstacles(sim.grid)
+        for direction, distance in sensor_readings.items():
+            dx, dy = Direction[direction].value
+            end_pos = (
+                sim.robot.pos[0] + dx * distance,
+                sim.robot.pos[1] + dy * distance,
+            )
+            (sensor_line,) = self.ax.plot(
+                [sim.robot.pos[0], end_pos[0]],
+                [sim.robot.pos[1], end_pos[1]],
+                "r--",
+            )
+            self.sensor_visuals.append(sensor_line)
 
     def draw_grid(self) -> None:
         for x in range(self.grid_size[0]):
@@ -79,11 +81,16 @@ class Renderer:
         continue_animation = sim.update()
         self.draw_grid()
 
+        if sim.robot.pos != sim.robot.prev_pos:
+            self.visualize_sensors = True
+        else:
+            self.visualize_sensors = False
+
+        self.draw_sensors(sim)
+
         if not continue_animation and not self.final_frame:
             self.draw_final(sim)
             self.final_frame = True
-
-        self.draw_sensors(sim)
 
     def animate(self, sim: "Sim", steps: int) -> None:
         self.anim = FuncAnimation(

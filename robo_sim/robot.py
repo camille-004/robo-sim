@@ -14,6 +14,7 @@ class Direction(Enum):
 @dataclass
 class Robot:
     pos: tuple[int, int]
+    prev_pos: tuple[int, int] = field(init=False, default=None)
     sensor_range: int = field(default=None, repr=False)
     has_sensor_data: bool = field(default=False, init=False)
 
@@ -22,6 +23,7 @@ class Robot:
             self.has_sensor_data = True
 
     def move(self, direction: Direction, grid: Grid) -> None:
+        self.prev_pos = self.pos
         dx, dy = direction.value
         new_pos = (self.pos[0] + dx, self.pos[1] + dy)
 
@@ -32,6 +34,7 @@ class Robot:
 @dataclass
 class SensorRobot(Robot):
     sensor_range: int = 3
+    sensor_readings_count: int = field(default=0, init=False)
 
     def sense_obstacles(self, grid: Grid) -> dict[str, int]:
         sensor_readings = {
@@ -51,6 +54,7 @@ class SensorRobot(Robot):
             dx, dy = direction.value
             for i in range(1, self.sensor_range + 1):
                 check_pos = (self.pos[0] + i * dx, self.pos[1] + i * dy)
+                self.sensor_readings_count += 1
                 if not grid.is_within_bounds(check_pos) or grid.is_obstacle(
                     check_pos
                 ):

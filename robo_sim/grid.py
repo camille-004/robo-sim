@@ -34,3 +34,12 @@ class Grid:
             self.grid[new_pos] = CellType.ROBOT
             return True
         return False
+
+    @property
+    def obstacles(self) -> list[tuple[int, int]]:
+        return [
+            (x, y)
+            for x in range(self.size[0])
+            for y in range(self.size[1])
+            if self.grid[x, y] == CellType.OBSTACLE
+        ]
