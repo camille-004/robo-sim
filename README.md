@@ -1,9 +1,7 @@
-# robo-sim
-
-## Getting Started
+# Getting Started
 
 Ensure that you have the package installed and configured in your environment.
-1. Clone the `robo-sim` repository to your machine.
+1. Clone the [`robo-sim`](https://github.com/camille-004/robo-sim/tree/main) repository to your machine.
 2. Navigate to the root directory of the project.
 3. Install the package using `pip`.
 
@@ -29,19 +27,8 @@ robo_sim example sensor_robot AStar
 
 ## Running Custom Simulations
 
-1. To create a YAML configuration file for your simulation, refer to for the required structure.
-2. Place your YAML file in the `configs` directory.
-3. Running your simulation:
-
-### Custom Simulation Command
-
-Assuming your custom configuration file is named `custom_config.yaml`, run:
-
-```sh
-robo_sim example my_custom_config AStar
-```
-
-### Running the Simulation with Python
+1. To create a YAML configuration file for your simulation, refer to the `Config` model descriptions in the documentation for the required structure.
+2. Run your simulation with the below script. To see the the rest of supported algorithms, refer tos (https://github.com/camille-004/robo-sim/blob/main/robo_sim/algorithms/enums.py)[`robo_sim/algorithms/enums.py`].
 
 ```python
 from pathlib import Path
@@ -49,6 +36,6 @@ from pathlib import Path
 from robo_sim.sim import Sim
 
 config_path = Path("my_custom_config.yaml")
-sim = Sim(config_path, "AStar")
+sim = Sim(config_path, algorithm="AStar")
 sim.run()
 ```

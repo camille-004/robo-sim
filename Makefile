@@ -1,4 +1,4 @@
-SRC = robo_sim/ tests/ setup.py
+SRC = robo_sim/ tests/ docs/ setup.py
 
 .PHONY: help format lint all
 

@@ -1,9 +1,8 @@
 import argparse
 
-from robo_sim.algorithms import AlgorithmType
 from robo_sim.sim import Sim
 
-from .constants import CONFIGS_DIR
+from .constants import EXAMPLES_DIR
 
 
 def main() -> None:
@@ -25,7 +24,7 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.example == "example" and args.simulation and args.algorithm:
-        config_path = CONFIGS_DIR / f"{args.simulation}.yaml"
+        config_path = EXAMPLES_DIR / f"{args.simulation}.yaml"
         sim = Sim(config_path, args.algorithm)
         sim.run()
     else:

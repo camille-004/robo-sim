@@ -14,9 +14,7 @@ logger = get_logger(__name__)
 
 
 class Sim:
-    def __init__(
-        self, config_path: Path, algorithm: str
-    ) -> None:
+    def __init__(self, config_path: Path, algorithm: str) -> None:
         self.config = ConfigFactory(config_path).load()
         robot_factory = registry.get(type(self.config), BasicRobotFactory())
         self.robot = robot_factory.create_robot(self.config)

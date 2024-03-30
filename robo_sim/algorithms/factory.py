@@ -5,7 +5,7 @@ from robo_sim.grid import Grid
 from robo_sim.logging import get_logger
 
 from .base import Algorithm
-from .types import AlgorithmType
+from .enums import AlgorithmType
 
 logger = get_logger(__name__)
 
