@@ -20,7 +20,8 @@ class Config(BaseModel):
         "obstacles to generate randomly.",
     )
     trace_path: bool = Field(
-        default=False, description="Whether to visually trace the robot's path."
+        default=False,
+        description="Whether to visually trace the robot's path.",
     )
 
     @validator("obstacles", pre=True)

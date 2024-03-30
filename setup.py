@@ -9,7 +9,13 @@ setup(
     install_requires=[
         "numpy",
         "matplotlib",
+        "colorlog",
     ],
+    entry_points={
+        "console_scripts": [
+            "robo_sim=robo_sim.cli.run:main",
+        ],
+    },
     description="A simple 2D robotics simulation package.",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",

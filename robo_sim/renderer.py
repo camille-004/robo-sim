@@ -118,7 +118,9 @@ class Renderer:
 
         if continue_animation:
             self.fig.suptitle(
-                f"Frame: {frame + 1}, Distance from Target: {distance_to_target}, Robot Position: {sim.robot.pos}",
+                f"$\\mathbf{{Frame}}$: {frame + 1}, "
+                f"$\\mathbf{{Distance from Target}}$: {distance_to_target}, "
+                f"$\\mathbf{{Robot Position}}$: {sim.robot.pos}",
                 fontsize=10,
             )
 
@@ -131,7 +133,9 @@ class Renderer:
 
         if not continue_animation and not self.final_frame:
             self.fig.suptitle(
-                f"Frame: {frame + 1}, Distance from Target: {distance_to_target}, Robot Position: {sim.robot.pos}",
+                f"$\\mathbf{{Frame}}$: {frame + 1}, "
+                f"$\\mathbf{{Distance from Target}}$: {distance_to_target}, "
+                f"$\\mathbf{{Robot Position}}$: {sim.robot.pos}",
                 fontsize=10,
             )
             self.draw_final(sim)
