@@ -23,7 +23,7 @@ class SimStats:
 
 
 class Summarizer:
-    def __init__(self, sim: Sim, robot: Robot, grid: Grid) -> None:
+    def __init__(self, sim: "Sim", robot: "Robot", grid: "Grid") -> None:
         self.sim = sim
         self.robot = robot
         self.grid = grid
