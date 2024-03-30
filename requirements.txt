@@ -2,3 +2,4 @@ numpy
 matplotlib
 colorlog
 autodoc_pydantic
+myst-parser
