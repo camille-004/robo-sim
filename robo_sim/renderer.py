@@ -6,6 +6,7 @@ from matplotlib.animation import FuncAnimation
 
 from .grid import CellType, Grid
 from .robot import Direction
+from .utils import manhattan_distance
 
 if TYPE_CHECKING:
     from .sim import Sim
@@ -13,13 +14,24 @@ if TYPE_CHECKING:
 
 class Renderer:
     def __init__(
-        self, grid: Grid, grid_size: tuple[int, int] = (10, 10)
+        self,
+        grid: Grid,
+        grid_size: tuple[int, int] = (10, 10),
+        trace_path: bool = False,
     ) -> None:
         self.grid = grid
         self.grid_size = grid_size
-        self.fig, self.ax = plt.subplots()
-        self.sensor_visuals = []
+        self.trace_path = trace_path
 
+        self.sensor_visuals = []
+        self.robot_path = []
+
+        self.final_frame = False
+
+        self.fig, self.ax = plt.subplots()
+        self.setup_plot()
+
+    def setup_plot(self) -> None:
         self.ax.set_xlim(0, self.grid_size[1])
         self.ax.set_ylim(0, self.grid_size[0])
         self.ax.set_aspect("equal")
@@ -28,7 +40,27 @@ class Renderer:
         self.ax.set_yticks(range(self.grid_size[0]), minor=True)
         self.ax.grid(which="minor", color="k", linestyle="--", linewidth=0.5)
 
-        self.final_frame = False
+    def update_robot_path(self, robot_pos: tuple[int, int]) -> None:
+        if self.trace_path:
+            self.robot_path.append(robot_pos)
+
+    def draw_robot(self, sim: "Sim") -> None:
+        robot_circle = patches.Circle(
+            sim.robot.pos, 0.3, facecolor="blue", edgecolor="none"
+        )
+        self.ax.add_patch(robot_circle)
+
+    def draw_robot_path(self) -> None:
+        if self.trace_path and len(self.robot_path) > 1:
+            for i in range(1, len(self.robot_path)):
+                start_pos = self.robot_path[i - 1]
+                end_pos = self.robot_path[i]
+                self.ax.plot(
+                    [start_pos[0], end_pos[0]],
+                    [start_pos[1], end_pos[1]],
+                    color="orange",
+                    alpha=0.3,
+                )
 
     def draw_sensors(self, sim: "Sim") -> None:
         if not sim.robot.has_sensor_data or not self.visualize_sensors:
@@ -59,8 +91,6 @@ class Renderer:
                 match self.grid.grid[x, y]:
                     case CellType.OBSTACLE:
                         color = "black"
-                    case CellType.ROBOT:
-                        color = "blue"
                     case CellType.TARGET:
                         color = "red"
 
@@ -80,6 +110,17 @@ class Renderer:
     def update(self, frame: int, sim: "Sim") -> None:
         continue_animation = sim.update()
         self.draw_grid()
+        self.update_robot_path(sim.robot.pos)
+        self.draw_robot_path()
+        self.draw_robot(sim)
+
+        distance_to_target = manhattan_distance(sim.robot.pos, sim.target)
+
+        if continue_animation:
+            self.fig.suptitle(
+                f"Frame: {frame + 1}, Distance from Target: {distance_to_target}, Robot Position: {sim.robot.pos}",
+                fontsize=10,
+            )
 
         if sim.robot.pos != sim.robot.prev_pos:
             self.visualize_sensors = True
@@ -89,6 +130,10 @@ class Renderer:
         self.draw_sensors(sim)
 
         if not continue_animation and not self.final_frame:
+            self.fig.suptitle(
+                f"Frame: {frame + 1}, Distance from Target: {distance_to_target}, Robot Position: {sim.robot.pos}",
+                fontsize=10,
+            )
             self.draw_final(sim)
             self.final_frame = True
 
@@ -110,4 +155,10 @@ class Renderer:
             ha="center",
             fontsize=14,
             color="green",
+            bbox=dict(
+                facecolor="white",
+                alpha=0.8,
+                edgecolor="gray",
+                boxstyle="round,pad=0.5",
+            ),
         )

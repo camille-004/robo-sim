@@ -20,7 +20,9 @@ class Sim:
         self.config = ConfigFactory(config_path).load()
         robot_factory = registry.get(type(self.config), BasicRobotFactory())
         self.robot = robot_factory.create_robot(self.config)
-        self.grid = Grid(size=self.config.grid_size)
+        self.grid = Grid(
+            size=self.config.grid_size, obstacles=self.config.obstacles
+        )
 
         self.target = self.config.target_pos
         self.steps = self.config.steps
@@ -29,8 +31,6 @@ class Sim:
         self.reached = False
 
         self.grid.add_target(self.target)
-        for obstacle in self.config.obstacles:
-            self.grid.add_obstacle(obstacle)
 
         self.algorithm = AlgorithmFactory.get_algorithm(
             algorithm_type,
@@ -39,7 +39,11 @@ class Sim:
             self.config.target_pos,
             self.config.sensor_range if self.robot.has_sensor_data else None,
         )
-        self.renderer = Renderer(self.grid, grid_size=self.config.grid_size)
+        self.renderer = Renderer(
+            self.grid,
+            grid_size=self.config.grid_size,
+            trace_path=self.config.trace_path,
+        )
         self.path = []
         self.path_idx = 0
         self.summarizer = Summarizer(self, self.robot, self.grid)

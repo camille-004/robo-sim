@@ -2,13 +2,14 @@ import heapq
 
 from robo_sim.grid import Grid
 from robo_sim.logging import get_logger
+from robo_sim.utils import manhattan_distance
 
 from ..base import Algorithm
 
 logger = get_logger(__name__)
 
 
-PENALTY_FACTOR = 50
+PENALTY_FACTOR = 10
 
 
 class AStar(Algorithm):
@@ -63,10 +64,7 @@ class AStar(Algorithm):
         return []
 
     def heuristic(self, pos: tuple[int, int]) -> int:
-        standard_heuristic = abs(pos[0] - self.target[0]) + abs(
-            pos[1] - self.target[1]
-        )  # Manhattan distance.
-
+        standard_heuristic = manhattan_distance(pos, self.target)
         if self.sensor_range is None:
             return standard_heuristic
 
