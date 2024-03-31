@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from ..types import Position
 
@@ -26,7 +26,7 @@ class Config(BaseModel):
         description="Whether to visually trace the robot's path.",
     )
 
-    @validator("start_pos", "target_pos", pre=True, allow_reuse=True)
+    @field_validator("start_pos", "target_pos")
     def validate(cls, v):
         if isinstance(v, tuple) and len(v) == 2:
             return Position(*v)
@@ -35,7 +35,7 @@ class Config(BaseModel):
         else:
             raise ValueError("Invalid position format!")
 
-    @validator("obstacles", pre=True)
+    @field_validator("obstacles")
     def check_obstacles_type(cls, v):
         if isinstance(v, list):
             return v  # List of Positions for coordinates.
@@ -46,8 +46,7 @@ class Config(BaseModel):
                 "Obstacles must be either a list of coordinates or an integer."
             )
 
-    class Config:
-        extra = "allow"
+    model_config = ConfigDict(extra="allow")
 
 
 class SensorRobotConfig(Config):

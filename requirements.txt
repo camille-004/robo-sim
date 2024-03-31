@@ -4,3 +4,4 @@ colorlog
 autodoc_pydantic
 myst-parser
 sphinx_press_theme
+pytest

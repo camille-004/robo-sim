@@ -7,7 +7,7 @@ from .factory import BasicRobotFactory, registry
 from .grid import Grid
 from .logging import get_logger
 from .renderer import Renderer
-from .robot import Direction, Position
+from .robot import Direction
 from .summarizer import Summarizer
 
 logger = get_logger(__name__)
@@ -28,7 +28,7 @@ class Sim:
         self.step = 0
         self.reached = False
 
-        self.grid.add_target(self.target)
+        self.grid.set_target(self.target)
 
         algorithm_type = getattr(AlgorithmType, algorithm, None)
         self.algorithm = AlgorithmFactory.get_algorithm(
