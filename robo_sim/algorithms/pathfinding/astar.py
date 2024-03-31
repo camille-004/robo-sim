@@ -89,15 +89,15 @@ class AStar(Algorithm):
 
     def compute_obstacle_proximity(self) -> dict[Position, int]:
         proximity_map: dict[Position, float] = {}
-        
-        for pos in self.grid:
-            if self.grid.is_obstacle(pos):
-                proximity_map[pos] = 0
+
+        for cell in self.grid:
+            if cell.is_obstacle:
+                proximity_map[cell.pos] = 0
             else:
                 min_dist = min(
-                    abs(pos.x - obs.x) + abs(pos.y - obs.y)
+                    abs(cell.pos.x - obs.x) + abs(cell.pos.y - obs.y)
                     for obs in self.grid.obstacles
                 )
-                proximity_map[pos] = min_dist
-        
+                proximity_map[cell.pos] = min_dist
+
         return proximity_map

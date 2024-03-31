@@ -82,24 +82,23 @@ class Renderer:
             self.sensor_visuals.append(sensor_line)
 
     def draw_grid(self) -> None:
-        for x in range(self.grid_size[0]):
-            for y in range(self.grid_size[1]):
-                color = "white"
-                match self.grid.grid[x, y]:
-                    case CellType.OBSTACLE:
-                        color = "black"
-                    case CellType.TARGET:
-                        color = "red"
+        for cell in self.grid:
+            color = "white"
+            match cell.cell_type:
+                case CellType.OBSTACLE:
+                    color = "black"
+                case CellType.TARGET:
+                    color = "red"
 
-                self.ax.add_patch(
-                    patches.Rectangle(
-                        (x - 0.5, y - 0.5),
-                        1,
-                        1,
-                        facecolor=color,
-                        edgecolor="none",
-                    )
+            self.ax.add_patch(
+                patches.Rectangle(
+                    (cell.pos.x - 0.5, cell.pos.y - 0.5),
+                    1,
+                    1,
+                    facecolor=color,
+                    edgecolor="none",
                 )
+            )
 
         plt.xlabel("X")
         plt.ylabel("Y")

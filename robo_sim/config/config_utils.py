@@ -9,8 +9,7 @@ def construct_tuple(loader: yaml.SafeLoader, node: yaml.Node) -> tuple:
 
 
 yaml.SafeLoader.add_constructor(
-    "tag:yaml.org,2002:python/tuple",
-    construct_tuple
+    "tag:yaml.org,2002:python/tuple", construct_tuple
 )
 
 

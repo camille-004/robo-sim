@@ -10,7 +10,9 @@ setup(
         "numpy",
         "matplotlib",
         "colorlog",
-        "autodoc_pydantic",
+        "pydantic",
+        "pyyaml",
+        "pytest",
     ],
     entry_points={
         "console_scripts": [

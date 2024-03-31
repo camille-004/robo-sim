@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 
 from .config import Config, SensorRobotConfig
 from .robot import Robot, SensorRobot
-from .types import Position
 
 
 class RobotFactory(ABC):
