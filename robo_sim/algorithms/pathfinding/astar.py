@@ -59,10 +59,6 @@ class AStar(Algorithm):
                     )
                     count += 1
 
-                    logger.debug(
-                        f"g_score: {g_score[neighbor]}, f_score: {f_score}"
-                    )
-
         return []
 
     def heuristic(self, pos: Position) -> int:
@@ -91,7 +87,7 @@ class AStar(Algorithm):
         proximity_map: dict[Position, float] = {}
 
         for cell in self.grid:
-            if cell.is_obstacle:
+            if self.grid.is_obstacle(cell):
                 proximity_map[cell.pos] = 0
             else:
                 min_dist = min(

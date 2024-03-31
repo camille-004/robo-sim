@@ -25,38 +25,6 @@ class Position(NamedTuple):
             )
 
 
-class CellType:
-    EMPTY = "EMPTY"
-    OBSTACLE = "OBSTACLE"
-    ROBOT = "ROBOT"
-    TARGET = "TARGET"
-
-
-class Cell:
-    def __init__(
-        self,
-        pos: Position,
-        cell_type: CellType = CellType.EMPTY,
-        reward: float | None = None,
-    ) -> None:
-        self.pos = pos
-        self.cell_type = cell_type
-        self.reward = reward
-
-    def __repr__(self) -> str:
-        return (
-            f"Cell(position={self.pos},\n"
-            + f"\tcell_type={self.cell_type},\n"
-            + f"\treward={self.reward})\n"
-        )
-
-    def is_obstacle(self) -> bool:
-        return self.cell_type == CellType.OBSTACLE
-
-    def is_target(self) -> bool:
-        return self.cell_type == CellType.TARGET
-
-
 class Direction(Enum):
     UP = (-1, 0)
     DOWN = (1, 0)

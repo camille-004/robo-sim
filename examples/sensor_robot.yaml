@@ -1,7 +1,7 @@
-steps: 100
+steps: 20
 grid_size: !!python/tuple [10, 10]
 start_pos: !!python/tuple [1, 1]
 target_pos: !!python/tuple [8, 8]
-obstacles: 20
+obstacles: 10
 sensor_range: 1
 trace_path: true
