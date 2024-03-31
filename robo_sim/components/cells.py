@@ -1,4 +1,4 @@
-from .types import Position
+from ..utils.types import Position
 
 
 class Cell:

@@ -3,9 +3,9 @@ from typing import Iterator
 
 import numpy as np
 
-from .cells import Cell, create_cell, ObstacleCell
-from .types import Position
-from .logging import get_logger
+from ..logging import get_logger
+from ..utils.types import Position
+from .cells import Cell, ObstacleCell, create_cell
 
 logger = get_logger(__name__)
 
@@ -17,10 +17,12 @@ class Grid:
         obstacles: int | list[Position] = 0,
     ) -> None:
         self.size = size
-        self.grid = np.array([
-            [create_cell(Position(x, y), "empty") for y in range(size[1])]
-            for x in range(size[0])
-        ])
+        self.grid = np.array(
+            [
+                [create_cell(Position(x, y), "empty") for y in range(size[1])]
+                for x in range(size[0])
+            ]
+        )
 
         self._obstacles = []
 

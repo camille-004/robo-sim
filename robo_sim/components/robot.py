@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 
+from ..utils.types import Direction, Position
 from .grid import Grid
-from .types import Direction, Position
 
 
 @dataclass
@@ -22,6 +22,7 @@ class Robot:
             self.pos = new_pos
             return True
         return False
+
 
 @dataclass
 class SensorRobot(Robot):

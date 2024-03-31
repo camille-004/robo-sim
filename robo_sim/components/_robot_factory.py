@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from .config import Config, SensorRobotConfig
+from ..config import Config, SensorRobotConfig
 from .robot import Robot, SensorRobot
 
 
