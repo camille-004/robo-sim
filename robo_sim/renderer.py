@@ -4,9 +4,13 @@ import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
-from .grid import CellType, Grid
+from .grid import Grid
 from .types import Direction, Position
 from .utils import manhattan_distance
+from .cells import ObstacleCell, TargetCell
+from .logging import get_logger
+
+logger = get_logger(__name__)
 
 if TYPE_CHECKING:
     from .sim import Sim
@@ -84,11 +88,10 @@ class Renderer:
     def draw_grid(self) -> None:
         for cell in self.grid:
             color = "white"
-            match cell.cell_type:
-                case CellType.OBSTACLE:
-                    color = "black"
-                case CellType.TARGET:
-                    color = "red"
+            if isinstance(cell, ObstacleCell):
+                color = "black"
+            elif isinstance(cell, TargetCell):
+                color = "red"
 
             self.ax.add_patch(
                 patches.Rectangle(

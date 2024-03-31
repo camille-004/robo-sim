@@ -29,6 +29,7 @@ class Sim:
         self.reached = False
 
         self.grid.set_target(self.target)
+        logger.info("Grid initialized with target.")
 
         algorithm_type = getattr(AlgorithmType, algorithm, None)
         self.algorithm = AlgorithmFactory.get_algorithm(
@@ -76,14 +77,15 @@ class Sim:
             return False
 
         direction = self.get_next_direction()
-        self.robot.move(direction, self.grid)
+        new_pos = self.robot.pos + direction.value
 
-        logger.info(f"Robot moved to {self.robot.pos}.")
-        self.step += 1
-
-        if self.robot.pos == self.target:
-            logger.info("Target reached!")
-            self.reached = True
+        if self.grid.is_within_bounds(new_pos) and not self.grid.is_obstacle(new_pos):
+            self.robot.move(direction, self.grid)
+            self.step += 1
+            logger.info(f"Robot moved to {self.robot.pos}.")
+            if self.robot.pos == self.target:
+                self.reached = True
+                logger.info("Target reached!")
 
         return not self.reached
 

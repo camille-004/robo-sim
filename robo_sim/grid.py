@@ -3,7 +3,11 @@ from typing import Iterator
 
 import numpy as np
 
-from .types import Cell, CellType, Position
+from .cells import Cell, create_cell, ObstacleCell
+from .types import Position
+from .logging import get_logger
+
+logger = get_logger(__name__)
 
 
 class Grid:
@@ -13,12 +17,10 @@ class Grid:
         obstacles: int | list[Position] = 0,
     ) -> None:
         self.size = size
-        self.grid = np.array(
-            [
-                [Cell(Position(x, y)) for y in range(size[1])]
-                for x in range(size[0])
-            ]
-        )
+        self.grid = np.array([
+            [create_cell(Position(x, y), "empty") for y in range(size[1])]
+            for x in range(size[0])
+        ])
 
         self._obstacles = []
 
@@ -38,7 +40,8 @@ class Grid:
 
     def set_target(self, pos: Position) -> None:
         if self.is_within_bounds(pos):
-            self.grid[pos.x][pos.y].cell_type = CellType.TARGET
+            self.grid[pos.x][pos.y] = create_cell(pos, "target")
+            logger.info(f"Target set at {pos}.")
         else:
             raise ValueError("Target position is out of grid bounds.")
 
@@ -46,22 +49,17 @@ class Grid:
         if isinstance(pos, tuple):
             pos = Position(*pos)
         if self.is_within_bounds(pos):
-            self.grid[pos.x, pos.y].cell_type = CellType.OBSTACLE
+            self.grid[pos.x, pos.y] = create_cell(pos, "obstacle")
             self._obstacles.append(pos)
         else:
             raise ValueError("Obstacle position is out of grid bounds.")
 
-    def is_obstacle(self, pos: Position | tuple[int, int]) -> bool:
-        if isinstance(pos, tuple):
-            pos = Position(*pos)
-        return self.grid[pos.x][pos.y].cell_type == CellType.OBSTACLE
-
-    def update_robot_pos(self, old_pos: Position, new_pos: Position) -> bool:
-        if self.is_within_bounds(new_pos) and not self.is_obstacle(new_pos):
-            self.grid[old_pos.x, old_pos.y].cell_type = CellType.EMPTY
-            self.grid[new_pos.x, new_pos.y].cell_type = CellType.ROBOT
-            return True
-        return False
+    def is_obstacle(self, cell: Cell | Position | tuple[int, int]) -> bool:
+        if isinstance(cell, Cell):
+            return isinstance(cell, ObstacleCell)
+        if isinstance(cell, tuple):
+            pos = Position(*cell)
+        return isinstance(self.grid[pos.x][pos.y], ObstacleCell)
 
     def generate_random_obstacles(self, num_obstacles: int) -> None:
         count = 0

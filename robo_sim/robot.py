@@ -16,13 +16,12 @@ class Robot:
             self.has_sensor_data = True
 
     def move(self, direction: Direction, grid: Grid) -> None:
-        self.prev_pos = self.pos
-        dx, dy = direction.value
-        new_pos = self.pos + (dx, dy)
-
-        if grid.update_robot_pos(self.pos, new_pos):
+        new_pos = self.pos + direction.value
+        if grid.is_within_bounds(new_pos) and not grid.is_obstacle(new_pos):
+            self.prev_pos = self.pos
             self.pos = new_pos
-
+            return True
+        return False
 
 @dataclass
 class SensorRobot(Robot):
