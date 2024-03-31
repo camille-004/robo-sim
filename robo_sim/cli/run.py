@@ -1,6 +1,6 @@
 import argparse
 
-from robo_sim.sim import Sim
+from robo_sim import Sim
 
 from .constants import EXAMPLES_DIR
 

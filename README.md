@@ -33,7 +33,7 @@ robo_sim example sensor_robot AStar
 ```python
 from pathlib import Path
 
-from robo_sim.sim import Sim
+from robo_sim import Sim
 
 config_path = Path("my_custom_config.yaml")
 sim = Sim(config_path, algorithm="AStar")

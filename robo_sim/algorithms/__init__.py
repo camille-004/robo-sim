@@ -1,4 +1,4 @@
 from .factory import AlgorithmFactory
-from .types import AlgorithmType
+from .enums import AlgorithmType
 
 __all__ = ["AlgorithmFactory", "AlgorithmType"]
