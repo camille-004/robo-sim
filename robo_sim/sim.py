@@ -2,13 +2,13 @@ import random
 from pathlib import Path
 
 from .algorithms import AlgorithmFactory, AlgorithmType
+from .components.grid import Grid
+from .components.renderer import Renderer
+from .components.robot import Direction
+from .components.robot_factory import BasicRobotFactory, registry
 from .config import ConfigFactory
-from .factory import BasicRobotFactory, registry
-from .grid import Grid
 from .logging import get_logger
-from .renderer import Renderer
-from .robot import Direction
-from .summarizer import Summarizer
+from .utils.summarizer import Summarizer
 
 logger = get_logger(__name__)
 
@@ -79,7 +79,9 @@ class Sim:
         direction = self.get_next_direction()
         new_pos = self.robot.pos + direction.value
 
-        if self.grid.is_within_bounds(new_pos) and not self.grid.is_obstacle(new_pos):
+        if self.grid.is_within_bounds(new_pos) and not self.grid.is_obstacle(
+            new_pos
+        ):
             self.robot.move(direction, self.grid)
             self.step += 1
             logger.info(f"Robot moved to {self.robot.pos}.")

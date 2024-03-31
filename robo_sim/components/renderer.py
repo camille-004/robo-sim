@@ -4,16 +4,16 @@ import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
-from .grid import Grid
-from .types import Direction, Position
-from .utils import manhattan_distance
+from ..logging import get_logger
+from ..utils.types import Direction, Position
+from ..utils.utils import manhattan_distance
 from .cells import ObstacleCell, TargetCell
-from .logging import get_logger
+from .grid import Grid
 
 logger = get_logger(__name__)
 
 if TYPE_CHECKING:
-    from .sim import Sim
+    from ..sim import Sim
 
 
 class Renderer:

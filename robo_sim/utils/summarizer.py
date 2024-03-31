@@ -2,13 +2,13 @@ import time
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from .logging import get_logger
+from ..logging import get_logger
 from .utils import manhattan_distance
 
 if TYPE_CHECKING:
-    from .grid import Grid
-    from .robot import Robot
-    from .sim import Sim
+    from ..components.grid import Grid
+    from ..components.robot import Robot
+    from ..sim import Sim
 
 logger = get_logger(__name__)
 
