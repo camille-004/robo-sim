@@ -1,4 +1,5 @@
 import random
+from typing import Iterator
 
 import numpy as np
 
@@ -13,7 +14,13 @@ class Grid:
     ) -> None:
         self.size = size
         self.grid = np.full(size, CellType.EMPTY, dtype=int)
+        self._obstacles = []
         self.setup_obstacles(obstacles)
+
+    def __iter__(self) -> Iterator[Position]:
+        for x in range(self.size[0]):
+            for y in range(self.size[1]):
+                yield Position(x, y)
 
     def add_target(self, pos: Position) -> None:
         self.grid[pos.x, pos.y] = CellType.TARGET
@@ -38,8 +45,11 @@ class Grid:
         elif isinstance(obstacles, int) and obstacles > 0:
             self.generate_random_obstacles(obstacles)
 
-    def add_obstacle(self, pos: Position) -> None:
+    def add_obstacle(self, pos: Position | tuple[int, int]) -> None:
+        if isinstance(pos, tuple):
+            pos = Position(*pos)
         self.grid[pos.x, pos.y] = CellType.OBSTACLE
+        self._obstacles.append(pos)
 
     def generate_random_obstacles(
         self, num_obstacles: int, exclude: list[Position] = []
@@ -49,14 +59,9 @@ class Grid:
             x = random.randint(0, self.size[0] - 1)
             y = random.randint(0, self.size[1] - 1)
             if (x, y) not in exclude and self.grid[x, y] == CellType.EMPTY:
-                self.add_obstacle(Position(x, y))
+                self.add_obstacle((x, y))
                 count += 1
 
     @property
     def obstacles(self) -> list[Position]:
-        return [
-            Position(x, y)
-            for x in range(self.size[0])
-            for y in range(self.size[1])
-            if self.grid[x, y] == CellType.OBSTACLE
-        ]
+        return self._obstacles

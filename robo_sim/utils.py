@@ -1,2 +1,5 @@
-def manhattan_distance(a: tuple[int, int], b: tuple[int, int]) -> float:
-    return abs(a[0] - b[0]) + abs(a[1] - b[1])
+from .types import Position
+
+
+def manhattan_distance(a: Position, b: Position) -> float:
+    return abs(a.x - b.x) + abs(a.y - b.y)

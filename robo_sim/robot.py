@@ -18,7 +18,7 @@ class Robot:
     def move(self, direction: Direction, grid: Grid) -> None:
         self.prev_pos = self.pos
         dx, dy = direction.value
-        new_pos = Position(self.pos[0] + dx, self.pos[1] + dy)
+        new_pos = self.pos + (dx, dy)
 
         if grid.update_robot_pos(self.pos, new_pos):
             self.pos = new_pos
@@ -46,7 +46,7 @@ class SensorRobot(Robot):
         for d_name, direction in direction_names.items():
             dx, dy = direction.value
             for i in range(1, self.sensor_range + 1):
-                check_pos = Position(self.pos.x + i * dx, self.pos.y + i * dy)
+                check_pos = self.pos + (i * dx, i * dy)
                 self.sensor_readings_count += 1
                 if not grid.is_within_bounds(check_pos) or grid.is_obstacle(
                     check_pos

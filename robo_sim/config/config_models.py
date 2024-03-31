@@ -38,7 +38,7 @@ class Config(BaseModel):
     @validator("obstacles", pre=True)
     def check_obstacles_type(cls, v):
         if isinstance(v, list):
-            return v  # List of tuples for coordinates.
+            return v  # List of Positions for coordinates.
         elif isinstance(v, int):
             return v  # Number of obstacles to generate randomly.
         else:

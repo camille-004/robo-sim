@@ -73,10 +73,7 @@ class Renderer:
         sensor_readings = sim.robot.sense_obstacles(sim.grid)
         for direction, distance in sensor_readings.items():
             dx, dy = Direction[direction].value
-            end_pos = Position(
-                sim.robot.pos.x + dx * distance,
-                sim.robot.pos.y + dy * distance,
-            )
+            end_pos = sim.robot.pos + (dx * distance, dy * distance)
             (sensor_line,) = self.ax.plot(
                 [sim.robot.pos.x, end_pos.x],
                 [sim.robot.pos.y, end_pos.y],

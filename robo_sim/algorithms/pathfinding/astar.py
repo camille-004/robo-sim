@@ -30,8 +30,9 @@ class AStar(Algorithm):
     def exec(self) -> list[Position]:
         open_set = [(0, 0, self.start, [])]
         heapq.heapify(open_set)
-        g_score = {self.start: 0}
         count = 1
+
+        g_score: dict[Position, float] = {self.start: 0}
 
         while open_set:
             _, _, current, path = heapq.heappop(open_set)
@@ -40,7 +41,7 @@ class AStar(Algorithm):
                 return path + [current]
 
             for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
-                neighbor = Position(current[0] + dx, current[1] + dy)
+                neighbor = current + (dx, dy)
 
                 if not self.grid.is_within_bounds(
                     neighbor
@@ -87,19 +88,16 @@ class AStar(Algorithm):
         return penalty
 
     def compute_obstacle_proximity(self) -> dict[Position, int]:
-        proximity_map = {}
-        for x in range(self.grid.size[0]):
-            for y in range(self.grid.size[1]):
-                pos = Position(x, y)
-                if self.grid.is_obstacle(pos):
-                    proximity_map[pos] = 0
-                else:
-                    min_dist = min(
-                        [
-                            abs(x - ox) + abs(y - oy)
-                            for ox, oy in self.grid.obstacles
-                        ]
-                    )
-                    proximity_map[pos] = min_dist
-
+        proximity_map: dict[Position, float] = {}
+        
+        for pos in self.grid:
+            if self.grid.is_obstacle(pos):
+                proximity_map[pos] = 0
+            else:
+                min_dist = min(
+                    abs(pos.x - obs.x) + abs(pos.y - obs.y)
+                    for obs in self.grid.obstacles
+                )
+                proximity_map[pos] = min_dist
+        
         return proximity_map

@@ -3,7 +3,7 @@ grid_size: !!python/tuple [10, 10]
 start_pos: !!python/tuple [1, 1]
 target_pos: !!python/tuple [8, 8]
 obstacles:
-  - [3, 3]
-  - [4, 4]
-  - [5, 5]
+  - !!python/tuple [3, 3]
+  - !!python/tuple [4, 4]
+  - !!python/tuple [5, 5]
 trace_path: true
