@@ -1,5 +1,7 @@
 from pydantic import BaseModel, Field, validator
 
+from ..types import Position
+
 
 class Config(BaseModel):
     steps: int = Field(
@@ -8,13 +10,13 @@ class Config(BaseModel):
     grid_size: tuple[int, int] = Field(
         default=(10, 10), description="Size of the 2D grid as (width, height)."
     )
-    start_pos: tuple[int, int] = Field(
+    start_pos: Position = Field(
         default=(1, 1), description="Starting position of the robot."
     )
-    target_pos: tuple[int, int] = Field(
+    target_pos: Position = Field(
         default=(8, 8), description="Position of the target."
     )
-    obstacles: int | list[tuple[int, int]] = Field(
+    obstacles: int | list[Position] = Field(
         default=[],
         description="List of obstacle positions or number of "
         "obstacles to generate randomly.",
@@ -23,6 +25,15 @@ class Config(BaseModel):
         default=False,
         description="Whether to visually trace the robot's path.",
     )
+
+    @validator("start_pos", "target_pos", pre=True, allow_reuse=True)
+    def validate(cls, v):
+        if isinstance(v, tuple) and len(v) == 2:
+            return Position(*v)
+        elif isinstance(v, Position):
+            return v
+        else:
+            raise ValueError("Invalid position format!")
 
     @validator("obstacles", pre=True)
     def check_obstacles_type(cls, v):

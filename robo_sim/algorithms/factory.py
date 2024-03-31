@@ -3,6 +3,7 @@ from typing import Type
 
 from robo_sim.grid import Grid
 from robo_sim.logging import get_logger
+from robo_sim.types import Position
 
 from .base import Algorithm
 from .enums import AlgorithmType
@@ -15,8 +16,8 @@ class AlgorithmFactory:
     def get_algorithm(
         algorithm_type: AlgorithmType,
         grid: Grid,
-        start: tuple[int, int],
-        target: tuple[int, int],
+        start: Position,
+        target: Position,
         sensor_range: int | None = None,
     ) -> Algorithm:
         try:

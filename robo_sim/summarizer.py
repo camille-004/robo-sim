@@ -1,9 +1,9 @@
-import math
 import time
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from .logging import get_logger
+from .utils import manhattan_distance
 
 if TYPE_CHECKING:
     from .grid import Grid
@@ -47,7 +47,7 @@ class Summarizer:
             self.robot, "sensor_readings_count", None
         )
 
-        total_displacement = self.calculate_displacement()
+        total_displacement = manhattan_distance(self.robot.pos, self.start_pos)
 
         self.stats = SimStats(
             execution_time=exec_time,
@@ -81,8 +81,3 @@ class Summarizer:
             logger.warning(
                 f"Target not reached Final position: {self.robot.pos}"
             )
-
-    def calculate_displacement(self) -> float:
-        dx = self.robot.pos[0] - self.start_pos[0]
-        dy = self.robot.pos[1] - self.start_pos[1]
-        return math.sqrt(dx**2 + dy**2)

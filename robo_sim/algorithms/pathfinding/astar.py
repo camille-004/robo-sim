@@ -2,6 +2,7 @@ import heapq
 
 from robo_sim.grid import Grid
 from robo_sim.logging import get_logger
+from robo_sim.types import Position
 from robo_sim.utils import manhattan_distance
 
 from ..base import Algorithm
@@ -16,8 +17,8 @@ class AStar(Algorithm):
     def __init__(
         self,
         grid: Grid,
-        start: tuple[int, int],
-        target: tuple[int, int],
+        start: Position,
+        target: Position,
         sensor_range: int | None = None,
     ) -> None:
         self.grid = grid
@@ -26,7 +27,7 @@ class AStar(Algorithm):
         self.sensor_range = sensor_range
         self.obstacle_proximity_map = self.compute_obstacle_proximity()
 
-    def exec(self) -> list[tuple[int, int]]:
+    def exec(self) -> list[Position]:
         open_set = [(0, 0, self.start, [])]
         heapq.heapify(open_set)
         g_score = {self.start: 0}
@@ -39,7 +40,7 @@ class AStar(Algorithm):
                 return path + [current]
 
             for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
-                neighbor = (current[0] + dx, current[1] + dy)
+                neighbor = Position(current[0] + dx, current[1] + dy)
 
                 if not self.grid.is_within_bounds(
                     neighbor
@@ -63,7 +64,7 @@ class AStar(Algorithm):
 
         return []
 
-    def heuristic(self, pos: tuple[int, int]) -> int:
+    def heuristic(self, pos: Position) -> int:
         standard_heuristic = manhattan_distance(pos, self.target)
         if self.sensor_range is None:
             return standard_heuristic
@@ -72,7 +73,7 @@ class AStar(Algorithm):
         sensor_range_adjustment = self.sensor_range * PENALTY_FACTOR / 10
         return standard_heuristic + proximity_penalty + sensor_range_adjustment
 
-    def get_proximity_penalty(self, pos: tuple[int, int]) -> int:
+    def get_proximity_penalty(self, pos: Position) -> int:
         if self.sensor_range is None:
             return 0
         proximity = self.obstacle_proximity_map.get(pos, self.sensor_range + 1)
@@ -85,11 +86,11 @@ class AStar(Algorithm):
             )
         return penalty
 
-    def compute_obstacle_proximity(self) -> dict[tuple[int, int], int]:
+    def compute_obstacle_proximity(self) -> dict[Position, int]:
         proximity_map = {}
         for x in range(self.grid.size[0]):
             for y in range(self.grid.size[1]):
-                pos = (x, y)
+                pos = Position(x, y)
                 if self.grid.is_obstacle(pos):
                     proximity_map[pos] = 0
                 else:

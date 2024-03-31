@@ -1,20 +1,13 @@
 from dataclasses import dataclass, field
-from enum import Enum
 
 from .grid import Grid
-
-
-class Direction(Enum):
-    UP = (-1, 0)
-    DOWN = (1, 0)
-    LEFT = (0, -1)
-    RIGHT = (0, 1)
+from .types import Direction, Position
 
 
 @dataclass
 class Robot:
-    pos: tuple[int, int]
-    prev_pos: tuple[int, int] = field(init=False, default=None)
+    pos: Position
+    prev_pos: Position = field(init=False, default=None)
     sensor_range: int = field(default=None, repr=False)
     has_sensor_data: bool = field(default=False, init=False)
 
@@ -25,7 +18,7 @@ class Robot:
     def move(self, direction: Direction, grid: Grid) -> None:
         self.prev_pos = self.pos
         dx, dy = direction.value
-        new_pos = (self.pos[0] + dx, self.pos[1] + dy)
+        new_pos = Position(self.pos[0] + dx, self.pos[1] + dy)
 
         if grid.update_robot_pos(self.pos, new_pos):
             self.pos = new_pos
@@ -53,7 +46,7 @@ class SensorRobot(Robot):
         for d_name, direction in direction_names.items():
             dx, dy = direction.value
             for i in range(1, self.sensor_range + 1):
-                check_pos = (self.pos[0] + i * dx, self.pos[1] + i * dy)
+                check_pos = Position(self.pos.x + i * dx, self.pos.y + i * dy)
                 self.sensor_readings_count += 1
                 if not grid.is_within_bounds(check_pos) or grid.is_obstacle(
                     check_pos

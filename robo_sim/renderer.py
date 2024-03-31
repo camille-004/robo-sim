@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
 from .grid import CellType, Grid
-from .robot import Direction
+from .types import Direction, Position
 from .utils import manhattan_distance
 
 if TYPE_CHECKING:
@@ -40,7 +40,7 @@ class Renderer:
         self.ax.set_yticks(range(self.grid_size[0]), minor=True)
         self.ax.grid(which="minor", color="k", linestyle="--", linewidth=0.5)
 
-    def update_robot_path(self, robot_pos: tuple[int, int]) -> None:
+    def update_robot_path(self, robot_pos: Position) -> None:
         if self.trace_path:
             self.robot_path.append(robot_pos)
 
@@ -56,8 +56,8 @@ class Renderer:
                 start_pos = self.robot_path[i - 1]
                 end_pos = self.robot_path[i]
                 self.ax.plot(
-                    [start_pos[0], end_pos[0]],
-                    [start_pos[1], end_pos[1]],
+                    [start_pos.x, end_pos.x],
+                    [start_pos.y, end_pos.y],
                     color="orange",
                     alpha=0.3,
                 )
@@ -73,13 +73,13 @@ class Renderer:
         sensor_readings = sim.robot.sense_obstacles(sim.grid)
         for direction, distance in sensor_readings.items():
             dx, dy = Direction[direction].value
-            end_pos = (
-                sim.robot.pos[0] + dx * distance,
-                sim.robot.pos[1] + dy * distance,
+            end_pos = Position(
+                sim.robot.pos.x + dx * distance,
+                sim.robot.pos.y + dy * distance,
             )
             (sensor_line,) = self.ax.plot(
-                [sim.robot.pos[0], end_pos[0]],
-                [sim.robot.pos[1], end_pos[1]],
+                [sim.robot.pos.x, end_pos.x],
+                [sim.robot.pos.y, end_pos.y],
                 "r--",
             )
             self.sensor_visuals.append(sensor_line)

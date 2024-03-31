@@ -7,7 +7,7 @@ from .factory import BasicRobotFactory, registry
 from .grid import Grid
 from .logging import get_logger
 from .renderer import Renderer
-from .robot import Direction
+from .robot import Direction, Position
 from .summarizer import Summarizer
 
 logger = get_logger(__name__)
@@ -35,7 +35,7 @@ class Sim:
             algorithm_type,
             self.grid,
             self.config.start_pos,
-            self.config.target_pos,
+            self.target,
             self.config.sensor_range if self.robot.has_sensor_data else None,
         )
         self.renderer = Renderer(
@@ -57,8 +57,8 @@ class Sim:
         if self.path and self.path_idx < len(self.path):
             next_pos = self.path[self.path_idx]
             self.path_idx += 1
-            dx = next_pos[0] - self.robot.pos[0]
-            dy = next_pos[1] - self.robot.pos[1]
+            dx = next_pos.x - self.robot.pos.x
+            dy = next_pos.y - self.robot.pos.y
 
             if dx == 0 and dy == 0:
                 raise ValueError(
