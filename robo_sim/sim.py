@@ -2,13 +2,13 @@ import random
 from pathlib import Path
 
 from .algorithms import AlgorithmFactory, AlgorithmType
+from .components._robot_factory import BasicRobotFactory, registry
 from .components.grid import Grid
 from .components.renderer import Renderer
 from .components.robot import Direction
-from .components.robot_factory import BasicRobotFactory, registry
+from .components.summarizer import Summarizer
 from .config import ConfigFactory
 from .logging import get_logger
-from .utils.summarizer import Summarizer
 
 logger = get_logger(__name__)
 

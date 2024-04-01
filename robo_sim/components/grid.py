@@ -1,5 +1,5 @@
 import random
-from typing import Iterator
+from typing import Any, Iterator
 
 import numpy as np
 
@@ -19,8 +19,11 @@ class Grid:
         self.size = size
         self.grid = np.array(
             [
-                [create_cell(Position(x, y), "empty") for y in range(size[1])]
-                for x in range(size[0])
+                [
+                    create_cell(Position(x, y), "empty")
+                    for y in range(size[1] + 1)
+                ]
+                for x in range(size[0] + 1)
             ]
         )
 
@@ -37,12 +40,18 @@ class Grid:
             for cell in row:
                 yield cell
 
+    def __getitem__(self, key: int) -> Cell:
+        return self.grid[key]
+
+    def __setitem__(self, key: int, value: Cell) -> None:
+        self.grid[key] = value
+
     def is_within_bounds(self, pos: Position) -> bool:
-        return 0 <= pos.x < self.size[0] and 0 <= pos.y < self.size[1]
+        return 0 <= pos.x <= self.size[0] and 0 <= pos.y <= self.size[1]
 
     def set_target(self, pos: Position) -> None:
         if self.is_within_bounds(pos):
-            self.grid[pos.x][pos.y] = create_cell(pos, "target")
+            self[pos.x, pos.y] = create_cell(pos, "target")
             logger.info(f"Target set at {pos}.")
         else:
             raise ValueError("Target position is out of grid bounds.")
@@ -51,7 +60,7 @@ class Grid:
         if isinstance(pos, tuple):
             pos = Position(*pos)
         if self.is_within_bounds(pos):
-            self.grid[pos.x, pos.y] = create_cell(pos, "obstacle")
+            self[pos.x, pos.y] = create_cell(pos, "obstacle")
             self._obstacles.append(pos)
         else:
             raise ValueError("Obstacle position is out of grid bounds.")
@@ -61,7 +70,7 @@ class Grid:
             return isinstance(cell, ObstacleCell)
         if isinstance(cell, tuple):
             pos = Position(*cell)
-        return isinstance(self.grid[pos.x][pos.y], ObstacleCell)
+        return isinstance(self[pos.x, pos.y], ObstacleCell)
 
     def generate_random_obstacles(self, num_obstacles: int) -> None:
         count = 0
