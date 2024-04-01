@@ -91,7 +91,7 @@ class Renderer:
             if isinstance(cell, ObstacleCell):
                 color = "black"
             elif isinstance(cell, TargetCell):
-                color = "red"
+                color = "lightgreen"
 
             self.ax.add_patch(
                 patches.Rectangle(

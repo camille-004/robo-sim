@@ -20,8 +20,6 @@ class Robot:
         if grid.is_within_bounds(new_pos) and not grid.is_obstacle(new_pos):
             self.prev_pos = self.pos
             self.pos = new_pos
-            return True
-        return False
 
 
 @dataclass
@@ -48,9 +46,10 @@ class SensorRobot(Robot):
             for i in range(1, self.sensor_range + 1):
                 check_pos = self.pos + (i * dx, i * dy)
                 self.sensor_readings_count += 1
-                if not grid.is_within_bounds(check_pos) or grid.is_obstacle(
-                    check_pos
-                ):
+                if not grid.is_within_bounds(check_pos):
+                    sensor_readings[d_name] = i - 1
+                    break
+                if grid.is_obstacle(check_pos):
                     sensor_readings[d_name] = i
                     break
 
