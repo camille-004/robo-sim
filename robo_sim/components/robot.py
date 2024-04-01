@@ -80,3 +80,26 @@ class ContinuousSensorRobot(SensorRobot):
                     break
 
         return min_distance
+
+    def sense_obstacle_at_angle(self, grid: Grid, angle: float) -> float:
+        rad = math.radians(angle)
+        min_distance = self.sensor_range
+
+        for r in range(1, self.sensor_range + 1):
+            dx = r * math.cos(rad)
+            dy = r * math.sin(rad)
+
+            check_pos_x = int(self.pos.x + dx)
+            check_pos_y = int(self.pos.y + dy)
+            check_pos = Position(check_pos_x, check_pos_y)
+
+            self.sensor_readings_count += 1
+
+            if not grid.is_within_bounds(check_pos) or grid.is_obstacle(
+                check_pos
+            ):
+                distance = math.sqrt(dx**2 + dy**2)
+                min_distance = min(min_distance, distance)
+                break
+
+        return min_distance

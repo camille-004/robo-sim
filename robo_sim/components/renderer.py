@@ -1,3 +1,4 @@
+import math
 from typing import TYPE_CHECKING
 
 import matplotlib.patches as patches
@@ -61,22 +62,12 @@ class Renderer:
                 self.ax.plot(
                     [start_pos.x, end_pos.x],
                     [start_pos.y, end_pos.y],
-                    color="orange",
+                    color="gray",
                     alpha=0.3,
                 )
 
-    def draw_sensors(self, sim: "Sim") -> None:
-        if (
-            not hasattr(sim.robot, "sensor_range")
-            or not self.visualize_sensors
-        ):
-            return
-
-        for visual in self.sensor_visuals:
-            visual.remove()
-        self.sensor_visuals.clear()
-
-        sensor_readings = sim.robot.sense_obstacles(sim.grid)
+    def _draw_discrete_sensors(self, sim: "Sim") -> None:
+        sensor_readings = sim.roobt.sense_obstacles(sim.grid)
         for direction, distance in sensor_readings.items():
             dx, dy = Direction[direction].value
             end_pos = sim.robot.pos + (dx * distance, dy * distance)
@@ -86,6 +77,34 @@ class Renderer:
                 "r--",
             )
             self.sensor_visuals.append(sensor_line)
+
+    def _draw_continuous_sensors(self, sim: "Sim") -> None:
+        angles = range(0, 360, 5)
+        robot_radius = 0.5
+
+        for angle in angles:
+            rad = math.radians(angle)
+            start_x = sim.robot.pos.x + robot_radius * math.cos(rad)
+            start_y = sim.robot.pos.y + robot_radius * math.sin(rad)
+            
+            distance = sim.robot.sense_obstacle_at_angle(sim.grid, angle)
+
+            end_x = sim.robot.pos.x + distance * math.cos(rad)
+            end_y = sim.robot.pos.y + distance * math.sin(rad)
+
+            (sensor_line,) = self.ax.plot([start_x, end_x], [start_y, end_y], "r-", linewidth=0.5)
+            self.sensor_visuals.append(sensor_line)
+
+    def draw_sensors(self, sim: "Sim") -> None:
+        for visual in self.sensor_visuals:
+            visual.remove()
+        self.sensor_visuals.clear()
+
+        if hasattr(sim.robot, "continuous_sensor"):
+            if sim.robot.continuous_sensor:
+                self._draw_continuous_sensors(sim)
+            else:
+                self._draw_discrete_sensors(sim)
 
     def draw_grid(self) -> None:
         for cell in self.grid:
