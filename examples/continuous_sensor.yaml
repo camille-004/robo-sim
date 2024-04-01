@@ -6,4 +6,4 @@ obstacles: 20
 trace_path: true
 sensor:
   sensor_range: 3
-  continuous: false
+  continuous: true

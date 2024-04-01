@@ -2,7 +2,7 @@ import random
 from pathlib import Path
 
 from .algorithms import AlgorithmFactory, AlgorithmType
-from .components._robot_factory import BasicRobotFactory, registry
+from .components._robot_factory import BasicRobotFactory, get_robot
 from .components.grid import Grid
 from .components.renderer import Renderer
 from .components.robot import Direction
@@ -16,8 +16,7 @@ logger = get_logger(__name__)
 class Sim:
     def __init__(self, config_path: Path, algorithm: str) -> None:
         self.config = ConfigFactory(config_path).load()
-        robot_factory = registry.get(type(self.config), BasicRobotFactory())
-        self.robot = robot_factory.create_robot(self.config)
+        self.robot = get_robot(self.config).create()
         self.grid = Grid(
             size=self.config.grid_size, obstacles=self.config.obstacles
         )
@@ -37,11 +36,10 @@ class Sim:
             self.grid,
             self.config.start_pos,
             self.target,
-            self.config.sensor_range if self.robot.has_sensor_data else None,
+            self.config.sensor.sensor_range,
         )
         self.renderer = Renderer(
             self.grid,
-            grid_size=self.config.grid_size,
             trace_path=self.config.trace_path,
         )
         self.path = []

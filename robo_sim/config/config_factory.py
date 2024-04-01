@@ -12,7 +12,7 @@ class ConfigFactory:
     def __init__(self, config_path: Path):
         self.config_path = config_path
         self.strategies = {
-            "sensor_range": SensorRobotConfigStrategy(),
+            "sensor": SensorRobotConfigStrategy(),
             "default": BasicRobotConfigStrategy(),
         }
 

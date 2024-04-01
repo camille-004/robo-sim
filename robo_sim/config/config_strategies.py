@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from .config_models import Config, SensorRobotConfig
+from .config_models import (Config, SensorRobotConfig)
 
 
 class ConfigStrategy(ABC):

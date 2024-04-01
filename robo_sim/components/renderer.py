@@ -4,6 +4,7 @@ import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
+from ..config import Config
 from ..logging import get_logger
 from ..utils.types import Direction, Position
 from ..utils.utils import manhattan_distance
@@ -20,11 +21,10 @@ class Renderer:
     def __init__(
         self,
         grid: Grid,
-        grid_size: tuple[int, int] = (10, 10),
         trace_path: bool = False,
     ) -> None:
         self.grid = grid
-        self.grid_size = grid_size
+        self.grid_size = grid.size
         self.trace_path = trace_path
 
         self.sensor_visuals = []
@@ -67,7 +67,7 @@ class Renderer:
                 )
 
     def draw_sensors(self, sim: "Sim") -> None:
-        if not sim.robot.has_sensor_data or not self.visualize_sensors:
+        if not hasattr(sim.robot, "sensor_range") or not self.visualize_sensors:
             return
 
         for visual in self.sensor_visuals:

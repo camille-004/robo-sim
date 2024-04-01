@@ -49,7 +49,15 @@ class Config(BaseModel):
     model_config = ConfigDict(extra="allow")
 
 
-class SensorRobotConfig(Config):
+class SensorConfig(BaseModel):
     sensor_range: int = Field(
         default=3, description="Range of the robot's sensors."
     )
+    continuous: bool = Field(
+        default=False,
+        description="Whether the robot uses continuous sensor scanning.",
+    )
+
+
+class SensorRobotConfig(Config):
+    sensor: SensorConfig = SensorConfig()
