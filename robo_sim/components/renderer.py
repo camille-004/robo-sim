@@ -4,7 +4,6 @@ import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
-from ..config import Config
 from ..logging import get_logger
 from ..utils.types import Direction, Position
 from ..utils.utils import manhattan_distance
@@ -67,7 +66,10 @@ class Renderer:
                 )
 
     def draw_sensors(self, sim: "Sim") -> None:
-        if not hasattr(sim.robot, "sensor_range") or not self.visualize_sensors:
+        if (
+            not hasattr(sim.robot, "sensor_range")
+            or not self.visualize_sensors
+        ):
             return
 
         for visual in self.sensor_visuals:

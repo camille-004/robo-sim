@@ -2,7 +2,7 @@ import random
 from pathlib import Path
 
 from .algorithms import AlgorithmFactory, AlgorithmType
-from .components._robot_factory import BasicRobotFactory, get_robot
+from .components._robot_factory import get_robot
 from .components.grid import Grid
 from .components.renderer import Renderer
 from .components.robot import Direction

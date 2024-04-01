@@ -20,13 +20,15 @@ class BasicRobotFactory(RobotFactory):
 
 class SensorRobotFactory(RobotFactory):
     def create(self) -> SensorRobot:
-        if self.config.sensor.continuous == True:
+        if self.config.sensor.continuous:
             return ContinuousSensorRobot(
-                pos=self.config.start_pos, sensor_range=self.config.sensor.sensor_range
+                pos=self.config.start_pos,
+                sensor_range=self.config.sensor.sensor_range,
             )
         else:
             return SensorRobot(
-                pos=self.config.start_pos, sensor_range=self.config.sensor.sensor_range
+                pos=self.config.start_pos,
+                sensor_range=self.config.sensor.sensor_range,
             )
 
 
@@ -40,5 +42,5 @@ def get_robot(config: Config) -> RobotFactory:
     for config_type, factory in registry.items():
         if isinstance(config, config_type):
             return factory(config)
-    
+
     raise ValueError(f"No factory registered for config type {type(config)}.")
