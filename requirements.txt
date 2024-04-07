@@ -1,7 +1,13 @@
 numpy
 matplotlib
 colorlog
+PyQt5
+pyyaml
+pydantic
+
+# Development dependencies:
 autodoc_pydantic
 myst-parser
 sphinx_press_theme
 pytest
+pre-commit

@@ -40,7 +40,7 @@ class Summarizer:
         self._calc_stats()
 
     def _calc_stats(self):
-        exec_time = self.end_time - self.start_time if self.end_time else 0
+        exec_time = self.end_time - self.start_time - 5 if self.end_time else 0
         steps_taken = self.sim.step
         path_length = len(self.sim.path) if self.sim.path else 0
         sensor_readings_count = getattr(

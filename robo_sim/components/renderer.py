@@ -1,6 +1,10 @@
 import math
+import threading
 from typing import TYPE_CHECKING
 
+import matplotlib
+
+matplotlib.use("Qt5Agg")
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
@@ -8,7 +12,6 @@ from matplotlib.animation import FuncAnimation
 from ..logging import get_logger
 from ..utils.types import Direction, Position
 from ..utils.utils import manhattan_distance
-from .cells import ObstacleCell, TargetCell
 from .grid import Grid
 
 logger = get_logger(__name__)
@@ -62,12 +65,12 @@ class Renderer:
                 self.ax.plot(
                     [start_pos.x, end_pos.x],
                     [start_pos.y, end_pos.y],
-                    color="gray",
+                    color="deepskyblue",
                     alpha=0.3,
                 )
 
     def _draw_discrete_sensors(self, sim: "Sim") -> None:
-        sensor_readings = sim.roobt.sense_obstacles(sim.grid)
+        sensor_readings = sim.robot.sense_obstacles(sim.grid)
         for direction, distance in sensor_readings.items():
             dx, dy = Direction[direction].value
             end_pos = sim.robot.pos + (dx * distance, dy * distance)
@@ -79,20 +82,22 @@ class Renderer:
             self.sensor_visuals.append(sensor_line)
 
     def _draw_continuous_sensors(self, sim: "Sim") -> None:
-        angles = range(0, 360, 5)
+        angles = range(0, 360, 30)
         robot_radius = 0.5
 
         for angle in angles:
             rad = math.radians(angle)
             start_x = sim.robot.pos.x + robot_radius * math.cos(rad)
             start_y = sim.robot.pos.y + robot_radius * math.sin(rad)
-            
+
             distance = sim.robot.sense_obstacle_at_angle(sim.grid, angle)
 
             end_x = sim.robot.pos.x + distance * math.cos(rad)
             end_y = sim.robot.pos.y + distance * math.sin(rad)
 
-            (sensor_line,) = self.ax.plot([start_x, end_x], [start_y, end_y], "r-", linewidth=0.5)
+            (sensor_line,) = self.ax.plot(
+                [start_x, end_x], [start_y, end_y], "r-", linewidth=0.5
+            )
             self.sensor_visuals.append(sensor_line)
 
     def draw_sensors(self, sim: "Sim") -> None:
@@ -108,18 +113,12 @@ class Renderer:
 
     def draw_grid(self) -> None:
         for cell in self.grid:
-            color = "white"
-            if isinstance(cell, ObstacleCell):
-                color = "black"
-            elif isinstance(cell, TargetCell):
-                color = "lightgreen"
-
             self.ax.add_patch(
                 patches.Rectangle(
                     (cell.pos.x - 0.5, cell.pos.y - 0.5),
                     1,
                     1,
-                    facecolor=color,
+                    facecolor=cell.color,
                     edgecolor="none",
                 )
             )
@@ -162,10 +161,25 @@ class Renderer:
             self.final_frame = True
 
     def animate(self, sim: "Sim", steps: int) -> None:
+        frames_per_second = 60
+        total_frames = frames_per_second * 5
+
+        def update_and_check_end(frame: int, _sim: "Sim") -> None:
+            self.update(frame, _sim)
+            if frame == total_frames - 1:
+                plt.close(self.fig)
+
         self.anim = FuncAnimation(
-            self.fig, self.update, fargs=(sim,), frames=steps, repeat=False
+            self.fig,
+            update_and_check_end,
+            fargs=(sim,),
+            frames=total_frames,
+            repeat=False,
         )
         plt.show()
+
+        close_timer = threading.Timer(5.0, plt.close, args=[self.fig])
+        close_timer.start()
 
     def draw_final(self, sim: "Sim") -> None:
         completion_text = (

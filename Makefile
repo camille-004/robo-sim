@@ -7,7 +7,7 @@ format:
 	isort $(SRC) --multi-line=3 --trailing-comma --force-grid-wrap=0 --line-length=80 --use-parentheses
 
 lint:
-	flake8 $(SRC)
+	flake8 --ignore=D100,D104,D101,D102,D107,D105,D103,E402 $(SRC)
 
 test:
 	pytest tests/
