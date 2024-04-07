@@ -4,7 +4,7 @@ from typing import Iterator
 import numpy as np
 
 from ..logging import get_logger
-from ..utils.types import Position
+from ..utils import Position
 from .cells import Cell, ObstacleCell, create_cell
 
 logger = get_logger(__name__)

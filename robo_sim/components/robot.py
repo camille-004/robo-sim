@@ -1,7 +1,7 @@
 import math
 from dataclasses import dataclass, field
 
-from ..utils.types import Direction, Position
+from ..utils import Direction, Position
 from .grid import Grid
 
 

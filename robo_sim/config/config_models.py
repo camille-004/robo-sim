@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from ..utils.types import Position
+from ..utils import Position
 
 
 class Config(BaseModel):

@@ -1,6 +1,6 @@
 import pytest
 
-from robo_sim.utils.types import Position
+from robo_sim.utils import Position
 
 
 @pytest.mark.parametrize(

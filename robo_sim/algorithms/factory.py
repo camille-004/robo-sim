@@ -3,7 +3,7 @@ from typing import Type
 
 from robo_sim.components.grid import Grid
 from robo_sim.logging import get_logger
-from robo_sim.utils.types import Position
+from robo_sim.utils import Position
 
 from .base import Algorithm
 from .enums import AlgorithmType

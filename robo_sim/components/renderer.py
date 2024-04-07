@@ -10,8 +10,7 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
 from ..logging import get_logger
-from ..utils.types import Direction, Position
-from ..utils.utils import manhattan_distance
+from ..utils import Direction, Position, manhattan_distance
 from .grid import Grid
 
 logger = get_logger(__name__)

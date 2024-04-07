@@ -1,6 +1,6 @@
 import random
 
-from ..utils.types import Position
+from ..utils import Position
 
 
 class Cell:

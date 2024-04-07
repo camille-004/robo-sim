@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from ..logging import get_logger
-from ..utils.utils import manhattan_distance
+from ..utils import manhattan_distance
 
 if TYPE_CHECKING:
     from ..sim import Sim

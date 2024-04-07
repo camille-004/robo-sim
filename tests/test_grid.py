@@ -1,7 +1,7 @@
 import pytest
 
 from robo_sim.components import EmptyCell, Grid, ObstacleCell, TargetCell
-from robo_sim.utils.types import Position
+from robo_sim.utils import Position
 
 
 def test_grid_initialization() -> None:

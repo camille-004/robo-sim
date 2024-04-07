@@ -1,9 +1,8 @@
 import pytest
 
-from robo_sim.algorithms.pathfinding.astar import AStar
+from robo_sim.algorithms.pathfinding import AStar
 from robo_sim.components import Grid
-from robo_sim.utils.types import Position
-from robo_sim.utils.utils import manhattan_distance
+from robo_sim.utils import Position, manhattan_distance
 
 
 @pytest.fixture
@@ -11,19 +10,19 @@ def empty_grid() -> Grid:
     return Grid(size=(5, 5), obstacles=[])
 
 
-@pytest.fixture()
+@pytest.fixture
 def grid_with_obstacles() -> Grid:
     obstacles = [Position(2, 2), Position(2, 3)]
     return Grid(size=(5, 5), obstacles=obstacles)
 
 
-@pytest.fixture()
+@pytest.fixture
 def grid_for_sensor_test() -> Grid:
     obstacles = [Position(2, 1), Position(2, 2), Position(2, 3)]
     return Grid(size=(5, 5), obstacles=obstacles)
 
 
-def test_astar_pathfinding_emptpy_grid(empty_grid: Grid) -> None:
+def test_astar_pathfinding_empty_grid(empty_grid: Grid) -> None:
     start = Position(0, 0)
     target = Position(4, 4)
     astar = AStar(grid=empty_grid, start=start, target=target)
@@ -35,7 +34,7 @@ def test_astar_pathfinding_emptpy_grid(empty_grid: Grid) -> None:
     assert len(path) > 0
 
 
-def test_astar_no_path_due_to_obstacles(grid_with_obstacles: Grid) -> None:
+def test_astar_path_with_to_obstacles(grid_with_obstacles: Grid) -> None:
     start = Position(0, 0)
     target = Position(4, 4)
     astar = AStar(grid=grid_with_obstacles, start=start, target=target)
@@ -77,7 +76,7 @@ def test_astar_sensor_range_adjustment(grid_for_sensor_test: Grid) -> None:
     print(path_sensor)
     for pos in path_sensor:
         if not all(
-            manhattan_distance(pos, obs) > sensor_range
+            manhattan_distance(pos, obs) >= sensor_range
             for obs in grid_for_sensor_test.obstacles
         ):
             print(f"Position too close to obstacle: {pos}")

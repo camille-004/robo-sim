@@ -1,7 +1,7 @@
 import pytest
 
 from robo_sim.components import Grid, Robot, SensorRobot
-from robo_sim.utils.types import Direction, Position
+from robo_sim.utils import Direction, Position
 
 
 def test_robot_init() -> None:
