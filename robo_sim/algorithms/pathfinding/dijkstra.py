@@ -1,9 +1,10 @@
 import heapq
 
 from robo_sim.components import Grid
-from robo_sim.utils import Position, manhattan_distance
+from robo_sim.utils import Position
 
 from ..base import Algorithm
+from .utils import compute_obstacle_proximity, get_proximity_penalty
 
 PENALTY_FACTOR = 10
 
@@ -20,7 +21,9 @@ class Dijkstra(Algorithm):
         self.start = start
         self.target = target
         self.sensor_range = sensor_range
-        self.obstacle_proximity_map = self.compute_obstacle_proximity()
+        self.obstacle_proximity_map = compute_obstacle_proximity(
+            grid, sensor_range
+        )
 
     def exec(self) -> list[Position]:
         open_set = [(0, self.start, [])]
@@ -43,7 +46,13 @@ class Dijkstra(Algorithm):
                     continue
 
                 tentative_g_score = (
-                    g_score[current] + 1 + self.get_proximity_penalty(neighbor)
+                    g_score[current]
+                    + 1  # noqa
+                    + get_proximity_penalty(  # noqa
+                        neighbor,
+                        self.obstacle_proximity_map,
+                        self.sensor_range,
+                    )
                 )
 
                 if tentative_g_score < g_score.get(neighbor, float("inf")):
@@ -54,35 +63,3 @@ class Dijkstra(Algorithm):
                     )
 
         return []
-
-    def get_proximity_penalty(self, pos: Position) -> int:
-        if self.sensor_range is None:
-            return 0
-
-        proximity = self.obstacle_proximity_map.get(pos, self.sensor_range + 1)
-        penalty = (
-            max(0, (self.sensor_range + 1 - proximity) ** 2) * PENALTY_FACTOR
-        )
-        return penalty
-
-    def compute_obstacle_proximity(self) -> dict[Position, int]:
-        proximity_map: dict[Position, float] = {}
-
-        if not self.grid.obstacles:
-            safe_distance = (
-                self.sensor_range + 1 if self.sensor_range is not None else 0
-            )
-            for cell in self.grid:
-                proximity_map[cell.pos] = safe_distance
-        else:
-            for cell in self.grid:
-                if self.grid.is_obstacle(cell.pos):
-                    proximity_map[cell.pos] = 0
-                else:
-                    min_dist = min(
-                        manhattan_distance(cell.pos, obs)
-                        for obs in self.grid.obstacles
-                    )
-                    proximity_map[cell.pos] = min_dist
-
-        return proximity_map
