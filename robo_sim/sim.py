@@ -84,17 +84,12 @@ class Sim:
             return False
 
         direction = self.get_next_direction()
-        new_pos = self.robot.pos + direction.value
-
-        if self.grid.is_within_bounds(new_pos) and not self.grid.is_obstacle(
-            new_pos
-        ):
-            self.robot.move(direction, self.grid)
-            self.step += 1
-            logger.info(f"Robot moved to {self.robot.pos}.")
-            if self.robot.pos == self.target:
-                self.reached = True
-                logger.info("Target reached!")
+        self.robot.move(direction, self.grid)
+        self.step += 1
+        logger.info(f"Robot moved to {self.robot.pos}.")
+        if self.robot.pos == self.target:
+            self.reached = True
+            logger.info("Target reached!")
 
         return not self.reached
 
