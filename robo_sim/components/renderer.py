@@ -13,6 +13,7 @@ from matplotlib.artist import Artist
 from ..logging import get_logger
 from ..utils import Direction, Position, manhattan_distance
 from .grid import Grid
+from .robot import ContinuousObstacleSensor
 
 logger = get_logger(__name__)
 
@@ -71,7 +72,7 @@ class Renderer:
 
     def _draw_discrete_sensors(self, sim: "Sim") -> None:
         if hasattr(sim.robot, "sensor"):
-            sensor_readings = sim.robot.sensor.sense(sim.grid)
+            sensor_readings = sim.robot.sensor.sense(sim.grid, sim.robot.pos)
             for direction, distance in sensor_readings.items():
                 dx, dy = Direction[direction].value
                 end_pos = sim.robot.pos + (dx * distance, dy * distance)
@@ -84,7 +85,7 @@ class Renderer:
 
     def _draw_continuous_sensors(self, sim: "Sim") -> None:
         if hasattr(sim.robot, "sensor"):
-            angles = range(0, 360, 30)
+            angles = range(0, 360, 5)
             robot_radius = 0.5
 
             for angle in angles:
@@ -92,7 +93,9 @@ class Renderer:
                 start_x = sim.robot.pos.x + robot_radius * math.cos(rad)
                 start_y = sim.robot.pos.y + robot_radius * math.sin(rad)
 
-                distance = sim.robot.sensor.sense_at_angle(sim.grid, angle)
+                distance = sim.robot.sensor.sense_at_angle(
+                    sim.grid, sim.robot.pos, angle
+                )
 
                 end_x = sim.robot.pos.x + distance * math.cos(rad)
                 end_y = sim.robot.pos.y + distance * math.sin(rad)
@@ -107,8 +110,8 @@ class Renderer:
             visual.remove()
         self.sensor_visuals.clear()
 
-        if hasattr(sim.robot, "continuous_sensor"):
-            if sim.robot.continuous_sensor:
+        if hasattr(sim.robot, "sensor"):
+            if isinstance(sim.robot.sensor, ContinuousObstacleSensor):
                 self._draw_continuous_sensors(sim)
             else:
                 self._draw_discrete_sensors(sim)
