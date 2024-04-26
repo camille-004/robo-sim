@@ -22,5 +22,5 @@ setup(
     description="A simple 2D robotics simulation package.",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
-    # TODO add URL.
+    url="https://github.com/camille-004/robo-sim"
 )

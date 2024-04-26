@@ -7,7 +7,10 @@ pydantic
 
 # Development dependencies:
 autodoc_pydantic
+mypy
 myst-parser
 sphinx_press_theme
 pytest
 pre-commit
+types-PyYAML
+types-setuptools

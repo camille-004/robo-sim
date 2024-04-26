@@ -4,7 +4,7 @@ from typing import Any
 import yaml
 
 
-def construct_tuple(loader: yaml.SafeLoader, node: yaml.Node) -> tuple:
+def construct_tuple(loader: yaml.SafeLoader, node: yaml.SequenceNode) -> tuple:
     return tuple(loader.construct_sequence(node))
 
 

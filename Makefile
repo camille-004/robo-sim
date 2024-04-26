@@ -8,6 +8,7 @@ format:
 
 lint:
 	flake8 --ignore=D100,D104,D101,D102,D107,D105,D103,E402 $(SRC)
+	mypy .
 
 test:
 	pytest tests/

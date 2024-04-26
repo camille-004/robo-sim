@@ -1,7 +1,9 @@
 import logging
-from typing import Any
+from typing import Any, Literal
 
 import colorlog
+
+StyleType = Literal["%", "{", "$"]
 
 
 class ColoredFormatter(colorlog.ColoredFormatter):
@@ -9,7 +11,7 @@ class ColoredFormatter(colorlog.ColoredFormatter):
         self,
         fmt: Any | None = None,
         datefmt: Any | None = None,
-        style: Any | None = "%",
+        style: StyleType = "%",
     ) -> None:
         super().__init__(
             fmt=fmt or "%(log_color)s%(asctime)s - %(name)s | %(message)s",

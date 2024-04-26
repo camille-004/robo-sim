@@ -27,7 +27,7 @@ class Grid:
             ]
         )
 
-        self._obstacles = []
+        self._obstacles: list[Position] = []
 
         if isinstance(obstacles, list):
             for pos in obstacles:
@@ -40,10 +40,10 @@ class Grid:
             for cell in row:
                 yield cell
 
-    def __getitem__(self, key: int) -> Cell:
+    def __getitem__(self, key: tuple[int, int]) -> Cell:
         return self.grid[key]
 
-    def __setitem__(self, key: int, value: Cell) -> None:
+    def __setitem__(self, key: tuple[int, int], value: Cell) -> None:
         self.grid[key] = value
 
     def is_within_bounds(self, pos: Position) -> bool:

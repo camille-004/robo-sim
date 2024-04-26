@@ -9,6 +9,7 @@ from .components.robot import Direction
 from .components.summarizer import Summarizer
 from .config import ConfigFactory
 from .logging import get_logger
+from .utils import Position
 
 logger = get_logger(__name__)
 
@@ -30,7 +31,11 @@ class Sim:
         self.grid.set_target(self.target)
         logger.info("Grid initialized with target.")
 
-        algorithm_type = getattr(AlgorithmType, algorithm, None)
+        if not hasattr(AlgorithmType, algorithm):
+            logger.error(f"No algorithm named '{algorithm}' found.")
+            raise ValueError(f"No algorithm named '{algorithm}' available.")
+
+        algorithm_type = getattr(AlgorithmType, algorithm)
         self.algorithm = AlgorithmFactory.get_algorithm(
             algorithm_type,
             self.grid,
@@ -44,7 +49,7 @@ class Sim:
             self.grid,
             trace_path=self.config.trace_path,
         )
-        self.path = []
+        self.path: list[Position] = []
         self.path_idx = 0
         self.summarizer = Summarizer(self, self.robot, self.grid)
 

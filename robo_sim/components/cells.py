@@ -9,7 +9,7 @@ class Cell:
         self.color = color
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(pos={self.pos}, color={self.color})"
+        return f"{self.__class__.__name__}(pos={self.pos})"
 
 
 class EmptyCell(Cell):

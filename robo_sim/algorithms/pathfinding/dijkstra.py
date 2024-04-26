@@ -1,4 +1,5 @@
 import heapq
+from typing import Any
 
 from robo_sim.components import Grid
 from robo_sim.utils import Position
@@ -17,16 +18,13 @@ class Dijkstra(Algorithm):
         target: Position,
         sensor_range: int | None = None,
     ) -> None:
-        self.grid = grid
-        self.start = start
-        self.target = target
-        self.sensor_range = sensor_range
+        super().__init__(grid, start, target, sensor_range)
         self.obstacle_proximity_map = compute_obstacle_proximity(
             grid, sensor_range
         )
 
     def exec(self) -> list[Position]:
-        open_set = [(0, self.start, [])]
+        open_set: list[tuple[int, Position, list[Any]]] = [(0, self.start, [])]
         heapq.heapify(open_set)
 
         g_score = {self.start: 0}

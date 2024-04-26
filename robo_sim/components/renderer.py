@@ -1,6 +1,6 @@
 import math
 import threading
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import matplotlib
 
@@ -8,6 +8,7 @@ matplotlib.use("Qt5Agg")
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+from matplotlib.artist import Artist
 
 from ..logging import get_logger
 from ..utils import Direction, Position, manhattan_distance
@@ -29,8 +30,8 @@ class Renderer:
         self.grid_size = grid.size
         self.trace_path = trace_path
 
-        self.sensor_visuals = []
-        self.robot_path = []
+        self.sensor_visuals: list[Any] = []
+        self.robot_path: list[Position] = []
 
         self.final_frame = False
 
@@ -69,35 +70,37 @@ class Renderer:
                 )
 
     def _draw_discrete_sensors(self, sim: "Sim") -> None:
-        sensor_readings = sim.robot.sense_obstacles(sim.grid)
-        for direction, distance in sensor_readings.items():
-            dx, dy = Direction[direction].value
-            end_pos = sim.robot.pos + (dx * distance, dy * distance)
-            (sensor_line,) = self.ax.plot(
-                [sim.robot.pos.x, end_pos.x],
-                [sim.robot.pos.y, end_pos.y],
-                "r--",
-            )
-            self.sensor_visuals.append(sensor_line)
+        if hasattr(sim.robot, "sensor"):
+            sensor_readings = sim.robot.sensor.sense(sim.grid)
+            for direction, distance in sensor_readings.items():
+                dx, dy = Direction[direction].value
+                end_pos = sim.robot.pos + (dx * distance, dy * distance)
+                (sensor_line,) = self.ax.plot(
+                    [sim.robot.pos.x, end_pos.x],
+                    [sim.robot.pos.y, end_pos.y],
+                    "r--",
+                )
+                self.sensor_visuals.append(sensor_line)
 
     def _draw_continuous_sensors(self, sim: "Sim") -> None:
-        angles = range(0, 360, 30)
-        robot_radius = 0.5
+        if hasattr(sim.robot, "sensor"):
+            angles = range(0, 360, 30)
+            robot_radius = 0.5
 
-        for angle in angles:
-            rad = math.radians(angle)
-            start_x = sim.robot.pos.x + robot_radius * math.cos(rad)
-            start_y = sim.robot.pos.y + robot_radius * math.sin(rad)
+            for angle in angles:
+                rad = math.radians(angle)
+                start_x = sim.robot.pos.x + robot_radius * math.cos(rad)
+                start_y = sim.robot.pos.y + robot_radius * math.sin(rad)
 
-            distance = sim.robot.sense_obstacle_at_angle(sim.grid, angle)
+                distance = sim.robot.sensor.sense_at_angle(sim.grid, angle)
 
-            end_x = sim.robot.pos.x + distance * math.cos(rad)
-            end_y = sim.robot.pos.y + distance * math.sin(rad)
+                end_x = sim.robot.pos.x + distance * math.cos(rad)
+                end_y = sim.robot.pos.y + distance * math.sin(rad)
 
-            (sensor_line,) = self.ax.plot(
-                [start_x, end_x], [start_y, end_y], "r-", linewidth=0.5
-            )
-            self.sensor_visuals.append(sensor_line)
+                (sensor_line,) = self.ax.plot(
+                    [start_x, end_x], [start_y, end_y], "r-", linewidth=0.5
+                )
+                self.sensor_visuals.append(sensor_line)
 
     def draw_sensors(self, sim: "Sim") -> None:
         for visual in self.sensor_visuals:
@@ -125,7 +128,7 @@ class Renderer:
         plt.xlabel("X")
         plt.ylabel("Y")
 
-    def update(self, frame: int, sim: "Sim") -> None:
+    def update(self, frame: int, sim: "Sim") -> tuple[Artist, ...]:
         continue_animation = sim.update()
         self.draw_grid()
         self.update_robot_path(sim.robot.pos)
@@ -142,12 +145,10 @@ class Renderer:
                 fontsize=10,
             )
 
-        if sim.robot.pos != sim.robot.prev_pos:
-            self.visualize_sensors = True
-        else:
-            self.visualize_sensors = False
-
         self.draw_sensors(sim)
+
+        artists = [self.fig]
+        artists.extend(self.sensor_visuals)
 
         if not continue_animation and not self.final_frame:
             self.fig.suptitle(
@@ -158,19 +159,16 @@ class Renderer:
             )
             self.draw_final(sim)
             self.final_frame = True
+        
+        return tuple(artists)
 
     def animate(self, sim: "Sim", steps: int) -> None:
         frames_per_second = 60
         total_frames = frames_per_second * 5
 
-        def update_and_check_end(frame: int, _sim: "Sim") -> None:
-            self.update(frame, _sim)
-            if frame == total_frames - 1:
-                plt.close(self.fig)
-
         self.anim = FuncAnimation(
             self.fig,
-            update_and_check_end,
+            self.update,
             fargs=(sim,),
             frames=total_frames,
             repeat=False,

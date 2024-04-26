@@ -1,4 +1,5 @@
 import heapq
+from typing import Any
 
 from robo_sim.components import Grid
 from robo_sim.utils import Position, manhattan_distance
@@ -17,16 +18,13 @@ class AStar(Algorithm):
         target: Position,
         sensor_range: int | None = None,
     ) -> None:
-        self.grid = grid
-        self.start = start
-        self.target = target
-        self.sensor_range = sensor_range
+        super().__init__(grid, start, target, sensor_range)
         self.obstacle_proximity_map = compute_obstacle_proximity(
             grid, sensor_range
         )
 
     def exec(self) -> list[Position]:
-        open_set = [(0, 0, self.start, [])]
+        open_set: list[tuple[float, int, Position, list[Any]]] = [(0, 0, self.start, [])]
         heapq.heapify(open_set)
         count = 1
 
@@ -61,7 +59,7 @@ class AStar(Algorithm):
 
         return []
 
-    def heuristic(self, pos: Position) -> int:
+    def heuristic(self, pos: Position) -> float:
         standard_heuristic = manhattan_distance(pos, self.target)
         if self.sensor_range is None:
             return standard_heuristic

@@ -1,12 +1,12 @@
 import pytest
 
-from robo_sim.components import Grid, Robot, SensorRobot
+from robo_sim.components import Grid, BasicRobot, SensorRobot, ObstacleSensor
 from robo_sim.utils import Direction, Position
 
 
 def test_robot_init() -> None:
     start_pos = Position(1, 1)
-    robot = Robot(pos=start_pos)
+    robot = BasicRobot(pos=start_pos)
 
     assert (
         robot.pos == start_pos
@@ -27,7 +27,7 @@ def test_robot_movement(
 ) -> None:
     start_pos = Position(1, 1)
     grid = Grid(size=(3, 3))
-    robot = Robot(pos=start_pos)
+    robot = BasicRobot(pos=start_pos)
 
     robot.move(direction, grid)
 
@@ -39,7 +39,7 @@ def test_robot_movement(
 def test_robot_blocked_by_obstacle() -> None:
     start_pos = Position(1, 1)
     grid = Grid(size=(3, 3), obstacles=[Position(1, 2)])
-    robot = Robot(pos=start_pos)
+    robot = BasicRobot(pos=start_pos)
 
     robot.move(Direction.UP, grid)
 
@@ -49,7 +49,7 @@ def test_robot_blocked_by_obstacle() -> None:
 def test_sensor() -> None:
     start_pos = Position(1, 1)
     grid = Grid(size=(5, 5), obstacles=[Position(1, 3)])
-    sensor_robot = SensorRobot(pos=start_pos, sensor_range=3)
+    sensor_robot = SensorRobot(pos=start_pos, sensor=ObstacleSensor(sensor_range=3))
 
     sensor_readings = sensor_robot.sense_obstacles(grid)
 
@@ -70,7 +70,7 @@ def test_sensor_varied_obstacles() -> None:
             Position(1, 2),
         ],
     )
-    sensor_robot = SensorRobot(pos=start_pos, sensor_range=3)
+    sensor_robot = SensorRobot(pos=start_pos, sensor=ObstacleSensor(sensor_range=3))
 
     sensor_readings = sensor_robot.sense_obstacles(grid)
 

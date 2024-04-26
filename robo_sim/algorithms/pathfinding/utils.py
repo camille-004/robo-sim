@@ -6,7 +6,7 @@ PENALTY_FACTOR = 10
 
 def compute_obstacle_proximity(
     grid: Grid, sensor_range: int | None = None
-) -> list[Position]:
+) -> dict[Position, int]:
     proximity_map: dict[Position, int] = {}
 
     if not grid.obstacles:
@@ -21,7 +21,7 @@ def compute_obstacle_proximity(
                 min_dist = min(
                     manhattan_distance(cell.pos, obs) for obs in grid.obstacles
                 )
-                proximity_map[cell.pos] = min_dist
+                proximity_map[cell.pos] = int(min_dist)
 
     return proximity_map
 
@@ -35,5 +35,5 @@ def get_proximity_penalty(
         return 0
 
     proximity = obstacle_proximity_map.get(pos, sensor_range + 1)
-    penalty = max(0, (sensor_range + 1 - proximity) ** 2) * PENALTY_FACTOR
+    penalty = int(max(0, (sensor_range + 1 - proximity) ** 2) * PENALTY_FACTOR)
     return penalty

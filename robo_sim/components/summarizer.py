@@ -28,6 +28,7 @@ class Summarizer:
         self.robot = robot
         self.grid = grid
         self.start_pos = robot.pos
+        self.total_distance_traveled = 0
 
     def record_movement(self, distance: int) -> None:
         self.total_distance_traveled += distance
