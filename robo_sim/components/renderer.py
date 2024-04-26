@@ -159,7 +159,7 @@ class Renderer:
             )
             self.draw_final(sim)
             self.final_frame = True
-        
+
         return tuple(artists)
 
     def animate(self, sim: "Sim", steps: int) -> None:

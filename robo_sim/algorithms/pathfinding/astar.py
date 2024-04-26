@@ -24,7 +24,9 @@ class AStar(Algorithm):
         )
 
     def exec(self) -> list[Position]:
-        open_set: list[tuple[float, int, Position, list[Any]]] = [(0, 0, self.start, [])]
+        open_set: list[tuple[float, int, Position, list[Any]]] = [
+            (0, 0, self.start, [])
+        ]
         heapq.heapify(open_set)
         count = 1
 

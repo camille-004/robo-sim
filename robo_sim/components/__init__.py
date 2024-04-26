@@ -1,7 +1,13 @@
 from .cells import Cell, EmptyCell, ObstacleCell, TargetCell, create_cell
 from .grid import Grid
 from .renderer import Renderer
-from .robot import Robot, BasicRobot, SensorRobot, ContinuousSensorRobot, ObstacleSensor
+from .robot import (
+    BasicRobot,
+    ContinuousSensorRobot,
+    ObstacleSensor,
+    Robot,
+    SensorRobot,
+)
 from .summarizer import Summarizer
 
 __all__ = [
@@ -13,7 +19,7 @@ __all__ = [
     "Grid",
     "Renderer",
     "Robot",
-    "BasicRobot"
+    "BasicRobot",
     "SensorRobot",
     "ContinuousSensorRobot",
     "ObstacleSensor",

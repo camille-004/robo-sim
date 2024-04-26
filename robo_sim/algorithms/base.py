@@ -6,7 +6,13 @@ from ..utils import Position
 
 
 class Algorithm(ABC):
-    def __init__(self, grid: Grid, start: Position, target: Position, sensor_range: int | None = None) -> None:
+    def __init__(
+        self,
+        grid: Grid,
+        start: Position,
+        target: Position,
+        sensor_range: int | None = None,
+    ) -> None:
         self.grid = grid
         self.start = start
         self.target = target

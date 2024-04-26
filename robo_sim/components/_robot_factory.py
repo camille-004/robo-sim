@@ -1,7 +1,14 @@
 from abc import ABC, abstractmethod
 
 from ..config import Config, SensorRobotConfig
-from .robot import ContinuousSensorRobot, Robot, SensorRobot, BasicRobot, ContinuousObstacleSensor, ObstacleSensor
+from .robot import (
+    BasicRobot,
+    ContinuousObstacleSensor,
+    ContinuousSensorRobot,
+    ObstacleSensor,
+    Robot,
+    SensorRobot,
+)
 
 
 class RobotFactory(ABC):
@@ -21,19 +28,23 @@ class BasicRobotFactory(RobotFactory):
 class SensorRobotFactory(RobotFactory):
     def create(self) -> SensorRobot:
         if not isinstance(self.config, SensorRobotConfig):
-            raise ValueError("SensorRobotFactory requires a SensorRobotConfig.")
+            raise ValueError(
+                "SensorRobotFactory requires a SensorRobotConfig."
+            )
 
-        sensor = ContinuousObstacleSensor(sensor_range=self.config.sensor.sensor_range) if self.config.sensor.continuous else ObstacleSensor(sensor_range=self.config.sensor.sensor_range)
+        sensor = (
+            ContinuousObstacleSensor(
+                sensor_range=self.config.sensor.sensor_range
+            )
+            if self.config.sensor.continuous
+            else ObstacleSensor(sensor_range=self.config.sensor.sensor_range)
+        )
         if self.config.sensor.continuous:
             return ContinuousSensorRobot(
-                pos=self.config.start_pos,
-                sensor=sensor
+                pos=self.config.start_pos, sensor=sensor
             )
         else:
-            return SensorRobot(
-                pos=self.config.start_pos,
-                sensor=sensor
-            )
+            return SensorRobot(pos=self.config.start_pos, sensor=sensor)
 
 
 registry: dict[type[Config], type[RobotFactory]] = {

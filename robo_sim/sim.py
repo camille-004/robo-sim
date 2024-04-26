@@ -41,9 +41,11 @@ class Sim:
             self.grid,
             self.config.start_pos,
             self.target,
-            self.config.sensor.sensor_range
-            if hasattr(self.config, "sensor")
-            else None,
+            (
+                self.config.sensor.sensor_range
+                if hasattr(self.config, "sensor")
+                else None
+            ),
         )
         self.renderer = Renderer(
             self.grid,

@@ -1,6 +1,6 @@
 import pytest
 
-from robo_sim.components import Grid, BasicRobot, SensorRobot, ObstacleSensor
+from robo_sim.components import BasicRobot, Grid, ObstacleSensor, SensorRobot
 from robo_sim.utils import Direction, Position
 
 
@@ -49,7 +49,9 @@ def test_robot_blocked_by_obstacle() -> None:
 def test_sensor() -> None:
     start_pos = Position(1, 1)
     grid = Grid(size=(5, 5), obstacles=[Position(1, 3)])
-    sensor_robot = SensorRobot(pos=start_pos, sensor=ObstacleSensor(sensor_range=3))
+    sensor_robot = SensorRobot(
+        pos=start_pos, sensor=ObstacleSensor(sensor_range=3)
+    )
 
     sensor_readings = sensor_robot.sense_obstacles(grid)
 
@@ -70,7 +72,9 @@ def test_sensor_varied_obstacles() -> None:
             Position(1, 2),
         ],
     )
-    sensor_robot = SensorRobot(pos=start_pos, sensor=ObstacleSensor(sensor_range=3))
+    sensor_robot = SensorRobot(
+        pos=start_pos, sensor=ObstacleSensor(sensor_range=3)
+    )
 
     sensor_readings = sensor_robot.sense_obstacles(grid)
 

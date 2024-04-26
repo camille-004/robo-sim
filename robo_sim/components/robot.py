@@ -7,10 +7,12 @@ from .grid import Grid
 
 
 class Robot(ABC):
-    def __init__(self, pos: Position, prev_pos: Position | None = None) -> None:
+    def __init__(
+        self, pos: Position, prev_pos: Position | None = None
+    ) -> None:
         self.pos = pos
         self.prev_pos = prev_pos
-    
+
     @abstractmethod
     def move(self, direction: Direction, grid: Grid) -> None:
         pass
@@ -76,9 +78,11 @@ class ContinuousObstacleSensor(SensorInterface):
             dy = int(r * math.sin(rad))
             check_pos = pos + (dx, dy)
 
-            if not grid.is_within_bounds(check_pos) or grid.is_obstacle(check_pos):
+            if not grid.is_within_bounds(check_pos) or grid.is_obstacle(
+                check_pos
+            ):
                 return math.sqrt(dx**2 + dy**2)
-        
+
         return float(self.sensor_range)
 
     def sense(self, grid: Grid, pos: Position) -> float:
@@ -87,12 +91,17 @@ class ContinuousObstacleSensor(SensorInterface):
         for angle in range(0, 360, 5):
             distance = self.sense_at_angle(grid, pos, angle)
             min_distance = min(min_distance, distance)
-        
+
         return min_distance
 
 
 class SensorRobot(BasicRobot):
-    def __init__(self, pos: Position, sensor: SensorInterface, prev_pos: Position | None = None) -> None:
+    def __init__(
+        self,
+        pos: Position,
+        sensor: SensorInterface,
+        prev_pos: Position | None = None,
+    ) -> None:
         super().__init__(pos, prev_pos)
         self.sensor = sensor
 
@@ -101,5 +110,10 @@ class SensorRobot(BasicRobot):
 
 
 class ContinuousSensorRobot(SensorRobot):
-    def __init__(self, pos: Position, sensor: SensorInterface, prev_pos: Position | None = None) -> None:
+    def __init__(
+        self,
+        pos: Position,
+        sensor: SensorInterface,
+        prev_pos: Position | None = None,
+    ) -> None:
         super().__init__(pos, sensor, prev_pos)
