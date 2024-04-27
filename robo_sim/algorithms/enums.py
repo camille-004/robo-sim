@@ -1,5 +1,5 @@
-from enum import Enum
+from enum import Enum, auto
 
 
 class AlgorithmType(Enum):
-    pass
+    BUG2 = auto()

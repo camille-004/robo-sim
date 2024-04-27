@@ -1,9 +1,9 @@
 numpy
 matplotlib
 colorlog
-PyQt5
 pyyaml
 pydantic
+tkinter
 
 # Development dependencies:
 autodoc_pydantic

@@ -1,3 +1,4 @@
+from ._robot_factory import get_robot
 from .env import Env
 from .renderer import Renderer
 from .robot import BasicRobot, Robot, SensorRobot
@@ -12,4 +13,5 @@ __all__ = [
     "SensorRobot",
     "BasicProximitySensor",
     "Summarizer",
+    "get_robot",
 ]

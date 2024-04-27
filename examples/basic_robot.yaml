@@ -1,10 +1,7 @@
 steps: 20
-env_size: !!python/tuple [10, 10]
+env_size: !!python/tuple [20, 20]
 start_pos: !!python/tuple [1, 1]
-target_pos: !!python/tuple [8, 8]
-obstacles:
-  - !!python/tuple [3, 3]
-  - !!python/tuple [4, 4]
-  - !!python/tuple [5, 5]
-  - !!python/tuple [10, 10]
+target_pos: !!python/tuple [10, 18]
+obstacles: 40
+speed: 0.3
 trace_path: true

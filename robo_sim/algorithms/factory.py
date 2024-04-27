@@ -1,6 +1,7 @@
 import importlib
 
 from robo_sim.components import Env, Robot
+from robo_sim.components.env_objects import Target
 from robo_sim.logging import get_logger
 from robo_sim.utils import Position
 
@@ -17,7 +18,7 @@ class AlgorithmFactory:
         env: Env,
         robot: Robot,
         start: Position,
-        target: Position,
+        target: Target,
         sensor_range: int | None = None,
     ) -> Algorithm:
         try:

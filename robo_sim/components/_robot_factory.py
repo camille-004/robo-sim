@@ -16,7 +16,7 @@ class RobotFactory(ABC):
 
 class BasicRobotFactory(RobotFactory):
     def create(self) -> Robot:
-        return BasicRobot(pos=self.config.start_pos)
+        return BasicRobot(pos=self.config.start_pos, speed=self.config.speed)
 
 
 class SensorRobotFactory(RobotFactory):
@@ -29,7 +29,9 @@ class SensorRobotFactory(RobotFactory):
         sensor = BasicProximitySensor(
             sensor_range=self.config.sensor.sensor_range
         )
-        return SensorRobot(pos=self.config.start_pos, sensor=sensor)
+        return SensorRobot(
+            pos=self.config.start_pos, speed=self.config.speed, sensor=sensor
+        )
 
 
 registry: dict[type[Config], type[RobotFactory]] = {

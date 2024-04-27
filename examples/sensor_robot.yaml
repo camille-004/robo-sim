@@ -1,8 +1,9 @@
 steps: 20
 env_size: !!python/tuple [20, 20]
 start_pos: !!python/tuple [1, 1]
-target_pos: !!python/tuple [8, 8]
-obstacles: 20
+target_pos: !!python/tuple [12, 12]
+obstacles: 40
 trace_path: true
+speed: 0.2
 sensor:
   sensor_range: 3

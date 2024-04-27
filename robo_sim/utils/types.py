@@ -1,10 +1,10 @@
 from enum import Enum
-from typing import NamedTuple
 
 
-class Position(NamedTuple):
-    x: float
-    y: float
+class Position:
+    def __init__(self, x: float, y: float) -> None:
+        self.x = x
+        self.y = y
 
     def __add__(self, other: "tuple | Position | float") -> "Position":
         if isinstance(other, tuple) and len(other) == 2:
@@ -32,18 +32,32 @@ class Position(NamedTuple):
                 "from Position."
             )
 
-    def __truediv__(self, other: "tuple | Position | float") -> "Position":
-        if isinstance(other, tuple) and len(other) == 2:
-            return Position(self.x / other[0], self.y / other[1])
-        elif isinstance(other, Position):
+    def __mul__(self, other: "Position | float") -> "Position":
+        if isinstance(other, Position):
+            return Position(self.x * other.x, self.y * other.y)
+        elif isinstance(other, float):
+            return Position(self.x * other, self.y * other)
+        else:
+            raise ValueError(
+                "Can only multiply Positions or floats by Position."
+            )
+
+    def __truediv__(self, other: "Position | float") -> "Position":
+        if isinstance(other, Position):
+            if other.x == 0 or other.y == 0:
+                raise ZeroDivisionError(
+                    "Division by zero in element-wise division of Position."
+                )
             return Position(self.x / other.x, self.y / other.y)
         elif isinstance(other, float):
             return Position(self.x / other, self.y / other)
         else:
             raise ValueError(
-                "Can only divide tuples of length 2, Positions, or floats by "
-                "Position."
+                "Can only divide Positions or floats by Position."
             )
+
+    def __repr__(self) -> str:
+        return f"Position(x={self.x}, y={self.y})"
 
 
 class Direction(Enum):
