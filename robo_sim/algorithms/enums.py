@@ -1,6 +1,5 @@
-from enum import Enum, auto
+from enum import Enum
 
 
 class AlgorithmType(Enum):
-    AStar = auto()
-    Dijkstra = auto()
+    pass

@@ -7,7 +7,7 @@ from ..utils import manhattan_distance
 
 if TYPE_CHECKING:
     from ..sim import Sim
-    from .grid import Grid
+    from .env import Env
     from .robot import Robot
 
 logger = get_logger(__name__)
@@ -23,10 +23,10 @@ class SimStats:
 
 
 class Summarizer:
-    def __init__(self, sim: "Sim", robot: "Robot", grid: "Grid") -> None:
+    def __init__(self, sim: "Sim", robot: "Robot", env: "Env") -> None:
         self.sim = sim
         self.robot = robot
-        self.grid = grid
+        self.env = env
         self.start_pos = robot.pos
         self.total_distance_traveled = 0
 
@@ -45,7 +45,7 @@ class Summarizer:
         steps_taken = self.sim.step
         path_length = len(self.sim.path) if self.sim.path else 0
         sensor_readings_count = getattr(
-            self.robot, "sensor_readings_count", None
+            self.robot.sensor, "sensor_readings_count", None
         )
 
         total_displacement = manhattan_distance(self.robot.pos, self.start_pos)

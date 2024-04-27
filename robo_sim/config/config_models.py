@@ -7,8 +7,9 @@ class Config(BaseModel):
     steps: int = Field(
         default=20, description="Number of steps for the robot to take."
     )
-    grid_size: tuple[int, int] = Field(
-        default=(10, 10), description="Size of the 2D grid as (width, height)."
+    env_size: tuple[int, int] = Field(
+        default=(10, 10),
+        description="Size of the 2D environment as (width, height).",
     )
     start_pos: Position = Field(
         default=(1, 1), description="Starting position of the robot."
@@ -16,8 +17,8 @@ class Config(BaseModel):
     target_pos: Position = Field(
         default=(8, 8), description="Position of the target."
     )
-    obstacles: int | list[Position] = Field(
-        default=[],
+    obstacles: int | set[Position] = Field(
+        default=set(),
         description="List of obstacle positions or number of "
         "obstacles to generate randomly.",
     )
@@ -53,10 +54,10 @@ class SensorConfig(BaseModel):
     sensor_range: int = Field(
         default=3, description="Range of the robot's sensors."
     )
-    continuous: bool = Field(
-        default=False,
-        description="Whether the robot uses continuous sensor scanning.",
-    )
+
+
+class ProximitySensorConfig(SensorConfig):
+    pass
 
 
 class SensorRobotConfig(Config):

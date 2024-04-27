@@ -1,11 +1,9 @@
-import random
 from pathlib import Path
 
 from .algorithms import AlgorithmFactory, AlgorithmType
 from .components._robot_factory import get_robot
-from .components.grid import Grid
+from .components.env import Env
 from .components.renderer import Renderer
-from .components.robot import Direction
 from .components.summarizer import Summarizer
 from .config import ConfigFactory
 from .logging import get_logger
@@ -18,8 +16,8 @@ class Sim:
     def __init__(self, config_path: Path, algorithm: str) -> None:
         self.config = ConfigFactory(config_path).load()
         self.robot = get_robot(self.config).create()
-        self.grid = Grid(
-            size=self.config.grid_size, obstacles=self.config.obstacles
+        self.env = Env(
+            size=self.config.env_size, obstacles=self.config.obstacles
         )
 
         self.target = self.config.target_pos
@@ -28,8 +26,8 @@ class Sim:
         self.step = 0
         self.reached = False
 
-        self.grid.set_target(self.target)
-        logger.info("Grid initialized with target.")
+        self.env.set_target(self.target)
+        logger.info("Environment initialized with target.")
 
         if not hasattr(AlgorithmType, algorithm):
             logger.error(f"No algorithm named '{algorithm}' found.")
@@ -38,7 +36,8 @@ class Sim:
         algorithm_type = getattr(AlgorithmType, algorithm)
         self.algorithm = AlgorithmFactory.get_algorithm(
             algorithm_type,
-            self.grid,
+            self.env,
+            self.robot,
             self.config.start_pos,
             self.target,
             (
@@ -48,50 +47,18 @@ class Sim:
             ),
         )
         self.renderer = Renderer(
-            self.grid,
+            self.env,
             trace_path=self.config.trace_path,
         )
         self.path: list[Position] = []
         self.path_idx = 0
-        self.summarizer = Summarizer(self, self.robot, self.grid)
+        self.summarizer = Summarizer(self, self.robot, self.env)
 
     def plan_path(self) -> None:
-        logger.info("Executing path planning...")
-        self.path = self.algorithm.exec()
-        if self.path and self.path[0] == self.config.start_pos:
-            self.path.pop(0)
-
-    def get_next_direction(self) -> Direction:
-        if self.path and self.path_idx < len(self.path):
-            next_pos = self.path[self.path_idx]
-            self.path_idx += 1
-            dx = next_pos.x - self.robot.pos.x
-            dy = next_pos.y - self.robot.pos.y
-
-            if dx == 0 and dy == 0:
-                raise ValueError(
-                    "Next position is the same as current position."
-                )
-
-            return Direction((dx, dy))
-        return random.choice(list(Direction))
+        raise NotImplementedError()
 
     def update(self) -> bool:
-        if self.reached:
-            return False
-        if self.step >= self.steps:
-            logger.info("Maximum number of steps reached.")
-            return False
-
-        direction = self.get_next_direction()
-        self.robot.move(direction, self.grid)
-        self.step += 1
-        logger.info(f"Robot moved to {self.robot.pos}.")
-        if self.robot.pos == self.target:
-            self.reached = True
-            logger.info("Target reached!")
-
-        return not self.reached
+        raise NotImplementedError()
 
     def run(self) -> None:
         self.summarizer.start()

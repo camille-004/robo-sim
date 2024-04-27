@@ -11,9 +11,9 @@ from matplotlib.animation import FuncAnimation
 from matplotlib.artist import Artist
 
 from ..logging import get_logger
-from ..utils import Direction, Position, manhattan_distance
-from .grid import Grid
-from .robot import ContinuousObstacleSensor
+from ..utils import Position, manhattan_distance
+from .env import Env
+from .sensors import BasicProximitySensor
 
 logger = get_logger(__name__)
 
@@ -24,11 +24,11 @@ if TYPE_CHECKING:
 class Renderer:
     def __init__(
         self,
-        grid: Grid,
+        env: Env,
         trace_path: bool = False,
     ) -> None:
-        self.grid = grid
-        self.grid_size = grid.size
+        self.env = env
+        self.env_size = env.size
         self.trace_path = trace_path
 
         self.sensor_visuals: list[Any] = []
@@ -40,13 +40,10 @@ class Renderer:
         self.setup_plot()
 
     def setup_plot(self) -> None:
-        self.ax.set_xlim(0, self.grid_size[1])
-        self.ax.set_ylim(0, self.grid_size[0])
+        self.ax.set_xlim(0, self.env_size[1])
+        self.ax.set_ylim(0, self.env_size[0])
         self.ax.set_aspect("equal")
-
-        self.ax.set_xticks(range(self.grid_size[1]), minor=True)
-        self.ax.set_yticks(range(self.grid_size[0]), minor=True)
-        self.ax.grid(which="minor", color="k", linestyle="--", linewidth=0.5)
+        self.ax.grid(visible=False)
 
     def update_robot_path(self, robot_pos: Position) -> None:
         if self.trace_path:
@@ -70,18 +67,19 @@ class Renderer:
                     alpha=0.3,
                 )
 
-    def _draw_discrete_sensors(self, sim: "Sim") -> None:
-        if hasattr(sim.robot, "sensor"):
-            sensor_readings = sim.robot.sensor.sense(sim.grid, sim.robot.pos)
-            for direction, distance in sensor_readings.items():
-                dx, dy = Direction[direction].value
-                end_pos = sim.robot.pos + (dx * distance, dy * distance)
-                (sensor_line,) = self.ax.plot(
-                    [sim.robot.pos.x, end_pos.x],
-                    [sim.robot.pos.y, end_pos.y],
-                    "r--",
-                )
-                self.sensor_visuals.append(sensor_line)
+    def draw_obstacles(self) -> None:
+        for pos in self.env.obstacles:
+            obstacle_circle = patches.Circle(
+                (pos.x, pos.y), 0.5, facecolor="red", edgecolor="none"
+            )
+            self.ax.add_patch(obstacle_circle)
+
+    def draw_target(self, sim: "Sim") -> None:
+        if hasattr(sim, "target"):
+            target_circle = patches.Circle(
+                sim.target, 0.5, facecolor="gold", edgecolor="none"
+            )
+            self.ax.add_patch(target_circle)
 
     def _draw_continuous_sensors(self, sim: "Sim") -> None:
         if hasattr(sim.robot, "sensor"):
@@ -94,7 +92,7 @@ class Renderer:
                 start_y = sim.robot.pos.y + robot_radius * math.sin(rad)
 
                 distance = sim.robot.sensor.sense_at_angle(
-                    sim.grid, sim.robot.pos, angle
+                    sim.env, sim.robot.pos, angle
                 )
 
                 end_x = sim.robot.pos.x + distance * math.cos(rad)
@@ -111,29 +109,13 @@ class Renderer:
         self.sensor_visuals.clear()
 
         if hasattr(sim.robot, "sensor"):
-            if isinstance(sim.robot.sensor, ContinuousObstacleSensor):
+            if isinstance(sim.robot.sensor, BasicProximitySensor):
                 self._draw_continuous_sensors(sim)
-            else:
-                self._draw_discrete_sensors(sim)
-
-    def draw_grid(self) -> None:
-        for cell in self.grid:
-            self.ax.add_patch(
-                patches.Rectangle(
-                    (cell.pos.x - 0.5, cell.pos.y - 0.5),
-                    1,
-                    1,
-                    facecolor=cell.color,
-                    edgecolor="none",
-                )
-            )
-
-        plt.xlabel("X")
-        plt.ylabel("Y")
 
     def update(self, frame: int, sim: "Sim") -> tuple[Artist, ...]:
         continue_animation = sim.update()
-        self.draw_grid()
+        self.draw_obstacles()
+        self.draw_target(sim)
         self.update_robot_path(sim.robot.pos)
         self.draw_robot_path()
         self.draw_robot(sim)

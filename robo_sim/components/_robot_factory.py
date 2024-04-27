@@ -1,14 +1,8 @@
 from abc import ABC, abstractmethod
 
 from ..config import Config, SensorRobotConfig
-from .robot import (
-    BasicRobot,
-    ContinuousObstacleSensor,
-    ContinuousSensorRobot,
-    ObstacleSensor,
-    Robot,
-    SensorRobot,
-)
+from .robot import BasicRobot, Robot, SensorRobot
+from .sensors import BasicProximitySensor
 
 
 class RobotFactory(ABC):
@@ -17,7 +11,7 @@ class RobotFactory(ABC):
 
     @abstractmethod
     def create(self) -> Robot:
-        raise NotImplementedError("Subclasses must override create_robot().")
+        raise NotImplementedError("Subclasses must override create().")
 
 
 class BasicRobotFactory(RobotFactory):
@@ -32,19 +26,10 @@ class SensorRobotFactory(RobotFactory):
                 "SensorRobotFactory requires a SensorRobotConfig."
             )
 
-        sensor = (
-            ContinuousObstacleSensor(
-                sensor_range=self.config.sensor.sensor_range
-            )
-            if self.config.sensor.continuous
-            else ObstacleSensor(sensor_range=self.config.sensor.sensor_range)
+        sensor = BasicProximitySensor(
+            sensor_range=self.config.sensor.sensor_range
         )
-        if self.config.sensor.continuous:
-            return ContinuousSensorRobot(
-                pos=self.config.start_pos, sensor=sensor
-            )
-        else:
-            return SensorRobot(pos=self.config.start_pos, sensor=sensor)
+        return SensorRobot(pos=self.config.start_pos, sensor=sensor)
 
 
 registry: dict[type[Config], type[RobotFactory]] = {
