@@ -15,7 +15,10 @@ class SensorFactory(ABC):
 
 class BasicProximitySensorFactory(SensorFactory):
     def create(self) -> BasicProximitySensor:
-        return BasicProximitySensor(sensor_range=self.config.sensor_range)
+        return BasicProximitySensor(
+            sensor_range=self.config.sensor_range,
+            granularity=self.config.granularity,
+        )
 
 
 sensor_registry: dict[type[SensorConfig], type[SensorFactory]] = {

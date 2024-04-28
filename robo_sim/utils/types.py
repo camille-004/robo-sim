@@ -1,5 +1,7 @@
 from enum import Enum
 
+from .utils import euclidean_distance
+
 
 class Position:
     def __init__(self, x: float, y: float) -> None:
@@ -55,6 +57,9 @@ class Position:
             raise ValueError(
                 "Can only divide Positions or floats by Position."
             )
+
+    def euclidean_dist(self, other: "Position") -> float:
+        return euclidean_distance(self, other)
 
     def __repr__(self) -> str:
         return f"Position(x={self.x}, y={self.y})"

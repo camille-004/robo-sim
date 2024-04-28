@@ -8,18 +8,30 @@ from .sensors import SensorInterface
 
 
 class Robot(EnvObject):
-    def __init__(self, pos: Position, speed: float) -> None:
+    def __init__(
+        self,
+        pos: Position,
+        init_vel: float,
+        init_ang_vel: float,
+        orientation: float,
+    ) -> None:
         self.pos = pos
-        self.speed = speed
+        self.init_vel = init_vel
+        self.init_ang_vel = init_ang_vel
+        self.orientation = orientation
         self.prev_pos = self.pos
 
     @property
-    def radius(self):
+    def radius(self) -> float:
         return 0.3
 
     @property
-    def color(self):
+    def color(self) -> str:
         return "blue"
+
+    @property
+    def shape(self) -> str:
+        return "circle"
 
     @abstractmethod
     def move(self, direction: Direction, env: Env) -> None:
@@ -70,7 +82,8 @@ class BasicRobot(Robot):
             Environment the robot is using.
         """
         vec = Position(
-            direction.value[0] * self.speed, direction.value[1] * self.speed
+            direction.value[0] * self.init_vel,
+            direction.value[1] * self.init_vel,
         )
         new_pos = self.pos + vec
         if env.is_within_bounds(new_pos) and not env.is_obstacle_in_range(
@@ -83,10 +96,12 @@ class SensorRobot(Robot):
     def __init__(
         self,
         pos: Position,
-        speed: float,
+        init_vel: float,
+        init_ang_vel: float,
+        orientation: float,
         sensor: SensorInterface,
     ) -> None:
-        super().__init__(pos, speed)
+        super().__init__(pos, init_vel, init_ang_vel, orientation)
         self.sensor = sensor
 
     def move(self, direction: Direction, env: Env) -> None:
@@ -100,7 +115,8 @@ class SensorRobot(Robot):
             Environment the robot is using.
         """
         vec = Position(
-            direction.value[0] * self.speed, direction.value[1] * self.speed
+            direction.value[0] * self.init_vel,
+            direction.value[1] * self.init_vel,
         )
         new_pos = self.pos + vec
         if env.is_within_bounds(new_pos) and not env.is_obstacle_in_range(
@@ -119,8 +135,8 @@ class SensorRobot(Robot):
             Environment the robot is using.
         """
         rad = math.radians(angle)
-        dx = math.cos(rad) * self.speed
-        dy = math.sin(rad) * self.speed
+        dx = math.cos(rad) * self.init_vel
+        dy = math.sin(rad) * self.init_vel
         new_pos = self.pos + (dx, dy)
 
         if env.is_within_bounds(new_pos) and not env.is_obstacle_in_range(
@@ -144,6 +160,6 @@ class SensorRobot(Robot):
         sensor_data = self.sensor.sense(env, self.pos, self.radius)
         best_angle = max(sensor_data, key=sensor_data.get)
         rad = math.radians(best_angle)
-        dx = math.cos(rad) * self.speed
-        dy = math.sin(rad) * self.speed
+        dx = math.cos(rad) * self.init_vel
+        dy = math.sin(rad) * self.init_vel
         return self.pos + (dx, dy)

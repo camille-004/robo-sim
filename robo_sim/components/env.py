@@ -32,6 +32,9 @@ class Env:
             if object_type == "target":
                 self.target = obj
             self.objects.append(obj)
+            logger.info(
+                f"{object_type.title()} of radius {obj.radius} at {pos}."
+            )
         else:
             raise ValueError("Position out of bounds.")
 

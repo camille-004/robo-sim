@@ -3,34 +3,30 @@ from pydantic import BaseModel, ConfigDict, Field, validator
 from ..utils import Position
 
 
-class Config(BaseModel):
-    steps: int = Field(
-        default=20, description="Number of steps for the robot to take."
-    )
-    env_size: tuple[int, int] = Field(
+class EnvConfig(BaseModel):
+    size: tuple[int, int] = Field(
         default=(10, 10),
         description="Size of the 2D environment as (width, height).",
-    )
-    start_pos: Position = Field(
-        default=Position(1, 1), description="Starting position of the robot."
-    )
-    target_pos: Position = Field(
-        default=Position(8, 8), description="Position of the target."
     )
     obstacles: int | set[Position] = Field(
         default=set(),
         description="List of obstacle positions or number of "
         "obstacles to generate randomly.",
     )
-    speed: float = Field(
-        default=1.0, description="Distance to move in one step."
-    )
     trace_path: bool = Field(
         default=False,
         description="Whether to visually trace the robot's path.",
     )
+    max_frames: int = Field(
+        default=100,
+        description="Maximum frames to reach before the algorithm must be "
+        "complete.",
+    )
+    target_pos: Position = Field(
+        default=Position(8, 8), description="Position of the target."
+    )
 
-    @validator("start_pos", "target_pos", pre=True)
+    @validator("target_pos", pre=True)
     def validate(cls, v):
         if isinstance(v, tuple) and len(v) == 2:
             return Position(*v)
@@ -57,11 +53,45 @@ class SensorConfig(BaseModel):
     sensor_range: int = Field(
         default=3, description="Range of the robot's sensors."
     )
+    granularity: int = Field(
+        default=5,
+        description="Amount of degrees between which to separate sensors.",
+    )
 
 
 class ProximitySensorConfig(SensorConfig):
     pass
 
 
-class SensorRobotConfig(Config):
+class RobotConfig(BaseModel):
+    start_pos: Position = Field(
+        default=Position(1, 1), description="Starting position of the robot."
+    )
+    start_orientation: float = Field(
+        default=0.0, description="Starting orientation of the robot."
+    )
+    init_vel: float = Field(
+        default=1.0, description="Initial linear velocity."
+    )
+    init_ang_vel: float = Field(
+        default=1.0, description="Initial angular velocity."
+    )
+
+    @validator("start_pos", pre=True)
+    def validate(cls, v):
+        if isinstance(v, tuple) and len(v) == 2:
+            return Position(*v)
+        elif isinstance(v, Position):
+            return v
+        else:
+            raise ValueError("Invalid position format!")
+
+    model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
+
+
+class SensorRobotConfig(RobotConfig):
     sensor: SensorConfig = SensorConfig()
+
+
+class AlgorithmConfig(BaseModel):
+    name: str = Field(default="default", description="Name of the algorithm.")

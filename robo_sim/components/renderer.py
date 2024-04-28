@@ -54,14 +54,24 @@ class Renderer:
 
     def draw_objects(self) -> None:
         for obj in self.env.objects:
-            circle = patches.Circle(
-                (obj.pos.x, obj.pos.y),
-                obj.radius,
-                facecolor=obj.color,
-                edgecolor="none",
-            )
-            self.ax.add_patch(circle)
-            self.artists.append(circle)
+            obj_shape: patches.Rectangle | patches.Circle
+            if obj.shape == "square":
+                obj_shape = patches.Rectangle(
+                    (obj.pos.x - obj.radius, obj.pos.y - obj.radius),
+                    2 * obj.radius,
+                    2 * obj.radius,
+                    facecolor=obj.color,
+                    edgecolor="none",
+                )
+            else:
+                obj_shape = patches.Circle(
+                    (obj.pos.x, obj.pos.y),
+                    obj.radius,
+                    facecolor=obj.color,
+                    edgecolor="none",
+                )
+            self.ax.add_patch(obj_shape)
+            self.artists.append(obj_shape)
 
     def draw_robot(self, sim: "Sim") -> None:
         robot_circle = patches.Circle(

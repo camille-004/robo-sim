@@ -23,8 +23,9 @@ class ProximitySensor(SensorInterface):
 
 
 class BasicProximitySensor(ProximitySensor):
-    def __init__(self, sensor_range: int):
+    def __init__(self, sensor_range: int, granularity: int):
         super().__init__(sensor_range)
+        self.granularity = granularity
 
     def sense_at_angle(
         self, env: Env, pos: Position, angle: float, robot_radius: float
@@ -45,8 +46,8 @@ class BasicProximitySensor(ProximitySensor):
     def sense(
         self, env: Env, pos: Position, robot_radius: float
     ) -> dict[int, float]:
-        angle_step = 1
+        self.sensor_readings_count += 360 // self.granularity
         return {
             angle: self.sense_at_angle(env, pos, angle, robot_radius)
-            for angle in range(0, 360, angle_step)
+            for angle in range(0, 360, self.granularity)
         }

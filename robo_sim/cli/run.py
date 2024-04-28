@@ -2,7 +2,11 @@ import argparse
 
 from robo_sim import Sim
 
-from .constants import EXAMPLES_DIR
+from .constants import (
+    ALGORITHM_EXAMPLES_DIR,
+    ENV_EXAMPLES_DIR,
+    ROBOT_EXAMPLES_DIR,
+)
 
 
 def main() -> None:
@@ -10,22 +14,30 @@ def main() -> None:
         prog="robo_sim", description="Run RoboSim simulations."
     )
     parser.add_argument(
-        "example", nargs="?", default="example", help="The example to run."
-    )
-    parser.add_argument(
-        "simulation",
+        "env",
         nargs="?",
-        help="The simulation to run, e.g., 'sensor_robot'.",
+        default="basic_env",
+        help="The environment configuration to use.",
     )
     parser.add_argument(
-        "algorithm", nargs="?", help="The algorithm to run, e.g., 'astar'."
+        "robot", nargs="?", default="basic_robot", help="The robot to use."
+    )
+    parser.add_argument(
+        "algorithm",
+        nargs="?",
+        default="DWA",
+        help="The algorithm to use.",
     )
 
     args = parser.parse_args()
 
-    if args.example == "example" and args.simulation and args.algorithm:
-        config_path = EXAMPLES_DIR / f"{args.simulation}.yaml"
-        sim = Sim(config_path, args.algorithm)
+    if args.env and args.robot and args.algorithm:
+        env_config_path = ENV_EXAMPLES_DIR / f"{args.env.lower()}.yaml"
+        robot_config_path = ROBOT_EXAMPLES_DIR / f"{args.robot.lower()}.yaml"
+        algorithm_config_path = (
+            ALGORITHM_EXAMPLES_DIR / f"{args.algorithm.lower()}.yaml"
+        )
+        sim = Sim(env_config_path, robot_config_path, algorithm_config_path)
         sim.run()
     else:
         parser.print_help()

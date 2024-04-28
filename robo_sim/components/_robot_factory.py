@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
 
-from ..config import Config, SensorRobotConfig
+from ..config import RobotConfig, SensorRobotConfig
 from .robot import BasicRobot, Robot, SensorRobot
 from .sensors import BasicProximitySensor
 
 
 class RobotFactory(ABC):
-    def __init__(self, config: Config) -> None:
+    def __init__(self, config: RobotConfig) -> None:
         self.config = config
 
     @abstractmethod
@@ -16,7 +16,12 @@ class RobotFactory(ABC):
 
 class BasicRobotFactory(RobotFactory):
     def create(self) -> Robot:
-        return BasicRobot(pos=self.config.start_pos, speed=self.config.speed)
+        return BasicRobot(
+            pos=self.config.start_pos,
+            init_vel=self.config.init_vel,
+            init_ang_vel=self.config.init_ang_vel,
+            orientation=self.config.start_orientation,
+        )
 
 
 class SensorRobotFactory(RobotFactory):
@@ -27,20 +32,25 @@ class SensorRobotFactory(RobotFactory):
             )
 
         sensor = BasicProximitySensor(
-            sensor_range=self.config.sensor.sensor_range
+            sensor_range=self.config.sensor.sensor_range,
+            granularity=self.config.sensor.granularity,
         )
         return SensorRobot(
-            pos=self.config.start_pos, speed=self.config.speed, sensor=sensor
+            pos=self.config.start_pos,
+            init_vel=self.config.init_vel,
+            init_ang_vel=self.config.init_ang_vel,
+            orientation=self.config.start_orientation,
+            sensor=sensor,
         )
 
 
-registry: dict[type[Config], type[RobotFactory]] = {
+registry: dict[type[RobotConfig], type[RobotFactory]] = {
     SensorRobotConfig: SensorRobotFactory,
-    Config: BasicRobotFactory,
+    RobotConfig: BasicRobotFactory,
 }
 
 
-def get_robot(config: Config) -> RobotFactory:
+def get_robot(config: RobotConfig) -> RobotFactory:
     for config_type, factory in registry.items():
         if isinstance(config, config_type):
             return factory(config)

@@ -8,16 +8,26 @@ class EnvObject:
         self.pos = pos
 
     def object_within_range(self, other: "EnvObject") -> bool:
-        distance = math.hypot(
-            self.pos.x - other.pos.x, self.pos.y - other.pos.y
-        )
-        return distance <= (self.radius + other.radius)
+        if self.shape == "square" and other.shape == "square":
+            return max(
+                abs(self.pos.x - other.pos.x), abs(self.pos.y - other.pos.y)
+            ) <= (self.radius + other.radius)
+        else:
+            distance = math.hypot(
+                self.pos.x - other.pos.x, self.pos.y - other.pos.y
+            )
+            return distance <= (self.radius + other.radius)
 
     def position_within_range(
         self, pos: Position, other_radius: float
     ) -> bool:
-        distance = math.hypot(self.pos.x - pos.x, self.pos.y - pos.y)
-        return distance <= (self.radius + other_radius)
+        if self.shape == "square":
+            return max(abs(self.pos.x - pos.x), abs(self.pos.y - pos.y)) <= (
+                self.radius + other_radius
+            )
+        else:
+            distance = math.hypot(self.pos.x - pos.x, self.pos.y - pos.y)
+            return distance <= (self.radius + other_radius)
 
     @property
     def radius(self) -> float:
@@ -27,18 +37,26 @@ class EnvObject:
     def color(self) -> str:
         raise NotImplementedError()
 
+    @property
+    def shape(self) -> str:
+        raise NotImplementedError()
+
 
 class Obstacle(EnvObject):
     def __init__(self, pos: Position) -> None:
         super().__init__(pos)
 
     @property
-    def radius(self):
+    def radius(self) -> float:
         return 0.5
 
     @property
-    def color(self):
+    def color(self) -> str:
         return "black"
+
+    @property
+    def shape(self) -> str:
+        return "square"
 
 
 class Target(EnvObject):
@@ -46,12 +64,16 @@ class Target(EnvObject):
         super().__init__(pos)
 
     @property
-    def radius(self):
+    def radius(self) -> float:
         return 0.5
 
     @property
-    def color(self):
+    def color(self) -> str:
         return "gold"
+
+    @property
+    def shape(self) -> str:
+        return "circle"
 
 
 class EnvObjectFactory:

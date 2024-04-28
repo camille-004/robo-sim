@@ -78,5 +78,5 @@ class Summarizer:
             logger.info("Target was successfully reached.")
         else:
             logger.warning(
-                f"Target not reached Final position: {self.robot.pos}"
+                f"Target not reached. Final position: {self.robot.pos}"
             )

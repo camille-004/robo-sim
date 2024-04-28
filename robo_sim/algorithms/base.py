@@ -1,24 +1,28 @@
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING
 
-from ..components import Env, Robot
 from ..components.env_objects import Target
 from ..utils import Position
+
+if TYPE_CHECKING:
+    from ..components import Env, Robot
+    from ..config import AlgorithmConfig
 
 
 class Algorithm(ABC):
     def __init__(
         self,
-        env: Env,
-        robot: Robot,
+        env: "Env",
+        robot: "Robot",
         start: Position,
         target: Target,
-        sensor_range: int | None = None,
+        params: "AlgorithmConfig",
     ) -> None:
         self.env = env
         self.robot = robot
         self.start = start
         self.target = target
-        self.sensor_range = sensor_range
+        self.params = params
 
     @abstractmethod
     def step(self) -> Position | None:
