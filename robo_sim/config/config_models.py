@@ -95,3 +95,10 @@ class SensorRobotConfig(RobotConfig):
 
 class AlgorithmConfig(BaseModel):
     name: str = Field(default="default", description="Name of the algorithm.")
+
+
+class RRTConfig(AlgorithmConfig):
+    max_step_size: float = Field(default=0.5)
+    max_iter: int = Field(default=1000)
+    goal_sample_rate: int = Field(default=20)
+    search_radius: float = Field(default=1.5)

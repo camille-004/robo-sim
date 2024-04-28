@@ -1,5 +1,4 @@
 import logging
-from pathlib import Path
 from typing import Any, Literal
 
 import colorlog
@@ -28,21 +27,12 @@ class ColoredFormatter(colorlog.ColoredFormatter):
         )
 
 
-def get_logger(
-    name: str | None, log_file: Path = Path("sim.txt")
-) -> logging.Logger:
+def get_logger(name: str | None) -> logging.Logger:
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
-    logger.propagate = False
 
-    if not logger.handlers:
-        console_handler = logging.StreamHandler()
-        console_handler.setFormatter(ColoredFormatter())
-        logger.addHandler(console_handler)
-
-        file_handler = logging.FileHandler(log_file, mode="a")
-        file_format = "%(asctime)s - %(name)s | %(levelname)s | %(message)s"
-        file_handler.setFormatter(logging.Formatter(file_format))
-        logger.addHandler(file_handler)
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(ColoredFormatter())
+    logger.addHandler(console_handler)
 
     return logger

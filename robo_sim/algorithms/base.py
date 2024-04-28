@@ -25,7 +25,7 @@ class Algorithm(ABC):
         self.params = params
 
     @abstractmethod
-    def step(self) -> tuple[Position, float]:
+    def step(self) -> tuple[Position, float] | None:
         """Make a single step decision based on the current environment state.
 
         Returns

@@ -55,12 +55,14 @@ class Sim:
     def run(self) -> None:
         self.summarizer.start()
         while not self.reached and self.step_idx < self.env_config.max_frames:
-            next_pos, next_angle = self.algorithm.step()
-            if next_pos is None:
+            res = self.algorithm.step()
+            if res is None:
                 logger.error("No more moves possible or target reached.")
                 break
+
+            next_pos, next_angle = res
             self.robot.move_to(next_pos)
-            self.robot.rotate_to(next_angle)
+            # self.robot.rotate_to(next_angle)
             self.renderer.animate_step_by_step(
                 self, self.step_idx, self.reached
             )
