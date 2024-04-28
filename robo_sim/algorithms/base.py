@@ -1,23 +1,36 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import TYPE_CHECKING
 
-from ..components import Grid
+from ..components.env_objects import Target
 from ..utils import Position
+
+if TYPE_CHECKING:
+    from ..components import Env, Robot
+    from ..config import AlgorithmConfig
 
 
 class Algorithm(ABC):
     def __init__(
         self,
-        grid: Grid,
+        env: "Env",
+        robot: "Robot",
         start: Position,
-        target: Position,
-        sensor_range: int | None = None,
+        target: Target,
+        params: "AlgorithmConfig",
     ) -> None:
-        self.grid = grid
+        self.env = env
+        self.robot = robot
         self.start = start
         self.target = target
-        self.sensor_range = sensor_range
+        self.params = params
 
     @abstractmethod
-    def exec(self, *args: Any, **kwargs: Any) -> list[Position]:
-        pass
+    def step(self) -> Position | None:
+        """Make a single step decision based on the current environment state.
+
+        Returns
+        -------
+        Position | None
+            The position of the next step to take.
+        """
+        raise NotImplementedError()

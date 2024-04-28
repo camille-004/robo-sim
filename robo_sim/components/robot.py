@@ -1,119 +1,165 @@
 import math
-from abc import ABC, abstractmethod
-from typing import Any
+from abc import abstractmethod
 
 from ..utils import Direction, Position
-from .grid import Grid
+from .env import Env
+from .env_objects import EnvObject
+from .sensors import SensorInterface
 
 
-class Robot(ABC):
+class Robot(EnvObject):
     def __init__(
-        self, pos: Position, prev_pos: Position | None = None
+        self,
+        pos: Position,
+        init_vel: float,
+        init_ang_vel: float,
+        orientation: float,
     ) -> None:
         self.pos = pos
-        self.prev_pos = prev_pos
+        self.init_vel = init_vel
+        self.init_ang_vel = init_ang_vel
+        self.orientation = orientation
+        self.prev_pos = self.pos
+
+    @property
+    def radius(self) -> float:
+        return 0.3
+
+    @property
+    def color(self) -> str:
+        return "blue"
+
+    @property
+    def shape(self) -> str:
+        return "circle"
 
     @abstractmethod
-    def move(self, direction: Direction, grid: Grid) -> None:
-        pass
+    def move(self, direction: Direction, env: Env) -> None:
+        """Move the robot in the specified direction within the evironment.
+
+        Parameters
+        ----------
+        direction : Direction
+            Direction in which to move.
+        env : Env
+            Environment the robot is using.
+        """
+        raise NotImplementedError()
+
+    def move_to(self, new_pos: Position) -> None:
+        """Update the robot's position to a new position.
+
+        Parameters
+        ----------
+        new_pos : Position
+            New position to move to.
+        """
+        self.prev_pos = self.pos
+        self.pos = new_pos
+
+    def check_collision_at_position(
+        self, pos: Position, objs: list[EnvObject]
+    ) -> bool:
+        orig_position = self.pos
+        self.pos = pos
+        collision = self.check_collision(objs)
+        self.pos = orig_position
+        return collision
+
+    def check_collision(self, objs: list[EnvObject]) -> bool:
+        return any(self.object_within_range(obj) for obj in objs)
 
 
 class BasicRobot(Robot):
-    def move(self, direction: Direction, grid: Grid) -> None:
-        new_pos = self.pos + direction.value
-        if grid.is_within_bounds(new_pos) and not grid.is_obstacle(new_pos):
-            self.prev_pos = self.pos
-            self.pos = new_pos
+    def move(self, direction: Direction, env: Env) -> None:
+        """Move the robot in the specified direction within the evironment.
+
+        Parameters
+        ----------
+        direction : Direction
+            Direction in which to move.
+        env : Env
+            Environment the robot is using.
+        """
+        vec = Position(
+            direction.value[0] * self.init_vel,
+            direction.value[1] * self.init_vel,
+        )
+        new_pos = self.pos + vec
+        if env.is_within_bounds(new_pos) and not env.is_obstacle_in_range(
+            new_pos, self.radius
+        ):
+            self.move_to(new_pos)
 
 
-class SensorInterface(ABC):
-    @abstractmethod
-    def sense(self, grid: Grid, pos: Position) -> Any:
-        pass
-
-
-class ObstacleSensor(SensorInterface):
-    def __init__(self, sensor_range: int) -> None:
-        self.sensor_range = sensor_range
-        self.sensor_readings_count = 0
-
-    def sense(self, grid: Grid, pos: Position) -> dict[str, int]:
-        sensor_readings = {
-            "UP": self.sensor_range,
-            "DOWN": self.sensor_range,
-            "LEFT": self.sensor_range,
-            "RIGHT": self.sensor_range,
-        }
-        direction_names = {
-            "UP": Direction.UP,
-            "DOWN": Direction.DOWN,
-            "RIGHT": Direction.RIGHT,
-            "LEFT": Direction.LEFT,
-        }
-
-        for d_name, direction in direction_names.items():
-            dx, dy = direction.value
-            for i in range(1, self.sensor_range + 1):
-                check_pos = pos + (i * dx, i * dy)
-                self.sensor_readings_count += 1
-                if not grid.is_within_bounds(check_pos):
-                    sensor_readings[d_name] = i - 1
-                    break
-                if grid.is_obstacle(check_pos):
-                    sensor_readings[d_name] = i
-                    break
-
-        return sensor_readings
-
-
-class ContinuousObstacleSensor(SensorInterface):
-    def __init__(self, sensor_range: int):
-        self.sensor_range = sensor_range
-        self.sensor_readings_count = 0
-
-    def sense_at_angle(self, grid: Grid, pos: Position, angle: float) -> float:
-        rad = math.radians(angle)
-        for r in range(1, self.sensor_range + 1):
-            dx = int(r * math.cos(rad))
-            dy = int(r * math.sin(rad))
-            check_pos = pos + (dx, dy)
-
-            if not grid.is_within_bounds(check_pos) or grid.is_obstacle(
-                check_pos
-            ):
-                return math.sqrt(dx**2 + dy**2)
-
-        return float(self.sensor_range)
-
-    def sense(self, grid: Grid, pos: Position) -> float:
-        min_distance = float("inf")
-
-        for angle in range(0, 360, 5):
-            distance = self.sense_at_angle(grid, pos, angle)
-            min_distance = min(min_distance, distance)
-
-        return min_distance
-
-
-class SensorRobot(BasicRobot):
+class SensorRobot(Robot):
     def __init__(
         self,
         pos: Position,
+        init_vel: float,
+        init_ang_vel: float,
+        orientation: float,
         sensor: SensorInterface,
-        prev_pos: Position | None = None,
     ) -> None:
-        super().__init__(pos, prev_pos)
+        super().__init__(pos, init_vel, init_ang_vel, orientation)
         self.sensor = sensor
 
-    def sense_obstacles(self, grid: Grid) -> dict[str, int]:
-        return self.sensor.sense(grid, self.pos)
+    def move(self, direction: Direction, env: Env) -> None:
+        """Move the robot in the specified direction within the evironment.
 
+        Parameters
+        ----------
+        direction : Direction
+            Direction in which to move.
+        env : Env
+            Environment the robot is using.
+        """
+        vec = Position(
+            direction.value[0] * self.init_vel,
+            direction.value[1] * self.init_vel,
+        )
+        new_pos = self.pos + vec
+        if env.is_within_bounds(new_pos) and not env.is_obstacle_in_range(
+            new_pos, self.radius
+        ):
+            self.move_to(new_pos)
 
-class ContinuousSensorRobot(SensorRobot):
-    def __init__(
-        self,
-        pos: Position,
-        sensor: SensorInterface,
-        prev_pos: Position | None = None,
-    ) -> None:
-        super().__init__(pos, sensor, prev_pos)
+    def move_with_angle(self, angle: float, env: Env) -> None:
+        """Move the robot based on an angle rather than a direction vector.
+
+        Parameters
+        ----------
+        angle : float
+            Angle in degrees to move.
+        env : Env
+            Environment the robot is using.
+        """
+        rad = math.radians(angle)
+        dx = math.cos(rad) * self.init_vel
+        dy = math.sin(rad) * self.init_vel
+        new_pos = self.pos + (dx, dy)
+
+        if env.is_within_bounds(new_pos) and not env.is_obstacle_in_range(
+            new_pos, self.radius
+        ):
+            self.move_to(new_pos)
+
+    def decide_move(self, env: Env) -> Position:
+        """Decide the next move based on sensor data.
+
+        Parameters
+        ----------
+        env : Env
+            Environment the robot is using.
+
+        Returns
+        -------
+        Position
+            New position based on the best sensed direction.
+        """
+        sensor_data = self.sensor.sense(env, self.pos, self.radius)
+        best_angle = max(sensor_data, key=sensor_data.get)
+        rad = math.radians(best_angle)
+        dx = math.cos(rad) * self.init_vel
+        dy = math.sin(rad) * self.init_vel
+        return self.pos + (dx, dy)

@@ -1,12 +1,15 @@
 import importlib
-from typing import Type
+from typing import TYPE_CHECKING
 
-from robo_sim.components.grid import Grid
+from robo_sim.components.env_objects import Target
 from robo_sim.logging import get_logger
 from robo_sim.utils import Position
 
 from .base import Algorithm
-from .enums import AlgorithmType
+
+if TYPE_CHECKING:
+    from robo_sim.components import Env, Robot
+    from robo_sim.config.config_models import AlgorithmConfig
 
 logger = get_logger(__name__)
 
@@ -14,20 +17,23 @@ logger = get_logger(__name__)
 class AlgorithmFactory:
     @staticmethod
     def get_algorithm(
-        algorithm_type: AlgorithmType,
-        grid: Grid,
+        env: "Env",
+        robot: "Robot",
         start: Position,
-        target: Position,
-        sensor_range: int | None = None,
+        target: Target,
+        params: "AlgorithmConfig",
     ) -> Algorithm:
         try:
-            module_name = algorithm_type.name.lower()
-            class_name = algorithm_type.name
+            algorithm_type = params.__class__.__name__.replace("Config", "")
+            module_name = algorithm_type.lower()
+            class_name = algorithm_type
             module = importlib.import_module(
-                f".pathfinding.{module_name}", "robo_sim.algorithms"
+                f"robo_sim.algorithms.path_planning.{module_name}"
             )
-            algorithm_class: Type[Algorithm] = getattr(module, class_name)
-            return algorithm_class(grid, start, target, sensor_range)
+            algorithm_class = getattr(module, class_name)
+            return algorithm_class(
+                env=env, robot=robot, start=start, target=target, params=params
+            )
         except (AttributeError, ModuleNotFoundError) as e:
-            logger.error(f"Algorithm {algorithm_type.name} not found: {e}.")
+            logger.error(f"Algorithm {algorithm_type} not found: {e}.")
             raise ValueError(f"Algorithm {algorithm_type} not found.") from e

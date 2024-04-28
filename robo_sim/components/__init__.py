@@ -1,27 +1,17 @@
-from .cells import Cell, EmptyCell, ObstacleCell, TargetCell, create_cell
-from .grid import Grid
+from ._robot_factory import get_robot
+from .env import Env
 from .renderer import Renderer
-from .robot import (
-    BasicRobot,
-    ContinuousSensorRobot,
-    ObstacleSensor,
-    Robot,
-    SensorRobot,
-)
+from .robot import BasicRobot, Robot, SensorRobot
+from .sensors import BasicProximitySensor
 from .summarizer import Summarizer
 
 __all__ = [
-    "Cell",
-    "EmptyCell",
-    "ObstacleCell",
-    "TargetCell",
-    "create_cell",
-    "Grid",
+    "Env",
     "Renderer",
     "Robot",
     "BasicRobot",
     "SensorRobot",
-    "ContinuousSensorRobot",
-    "ObstacleSensor",
+    "BasicProximitySensor",
     "Summarizer",
+    "get_robot",
 ]

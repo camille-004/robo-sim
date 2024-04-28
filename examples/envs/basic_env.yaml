@@ -1,0 +1,5 @@
+size: !!python/tuple [20, 20]
+target_pos: !!python/tuple [12, 12]
+obstacles: 20
+trace_path: true
+max_frames: 10
