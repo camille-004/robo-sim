@@ -57,17 +57,25 @@ class Robot(EnvObject):
         self.prev_pos = self.pos
         self.pos = new_pos
 
-    def check_collision_at_position(
-        self, pos: Position, objs: list[EnvObject]
-    ) -> bool:
-        orig_position = self.pos
-        self.pos = pos
-        collision = self.check_collision(objs)
-        self.pos = orig_position
-        return collision
+    def rotate_to(self, new_orientation: float) -> None:
+        """Rotate the robot to a specific orientation
 
-    def check_collision(self, objs: list[EnvObject]) -> bool:
-        return any(self.object_within_range(obj) for obj in objs)
+        Parameters
+        ----------
+        new_orientation : float
+            The new orientation in degeres
+        """
+        self.orientation = new_orientation % 360
+
+    def rotate_by(self, angle: float) -> None:
+        """Rotate the robot by a given angle.
+
+        Parameters
+        ----------
+        angle : float
+            The angle in degrees to rotate by.
+        """
+        self.orientation = (self.orientation + angle) % 360
 
 
 class BasicRobot(Robot):

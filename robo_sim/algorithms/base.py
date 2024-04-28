@@ -25,12 +25,12 @@ class Algorithm(ABC):
         self.params = params
 
     @abstractmethod
-    def step(self) -> Position | None:
+    def step(self) -> tuple[Position, float]:
         """Make a single step decision based on the current environment state.
 
         Returns
         -------
-        Position | None
-            The position of the next step to take.
+        tuple[Position |float] | None
+            The new position and the orientation.
         """
         raise NotImplementedError()
